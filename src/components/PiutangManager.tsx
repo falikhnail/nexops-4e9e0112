@@ -59,9 +59,15 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
       const store = storeMap.get(p.storeId);
       const matchSearch = !search || p.invoiceNumber.toLowerCase().includes(search.toLowerCase()) || store?.name.toLowerCase().includes(search.toLowerCase());
       const matchStatus = filterStatus === 'all' || p.status === filterStatus;
-      return matchSearch && matchStatus;
+      const matchStore = filterStore === 'all' || p.storeId === filterStore;
+      const matchDateFrom = !filterDateFrom || p.dueDate >= filterDateFrom;
+      const matchDateTo = !filterDateTo || p.dueDate <= filterDateTo;
+      return matchSearch && matchStatus && matchStore && matchDateFrom && matchDateTo;
     });
-  }, [piutangs, search, filterStatus, storeMap]);
+  }, [piutangs, search, filterStatus, filterStore, filterDateFrom, filterDateTo, storeMap]);
+
+  const hasActiveFilters = filterStatus !== 'all' || filterStore !== 'all' || filterDateFrom || filterDateTo;
+  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); };
 
   const handleAddPiutang = async () => {
     const amount = parseRupiahInput(newForm.amount);
