@@ -33,6 +33,9 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   const [openPayment, setOpenPayment] = useState<string | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterStore, setFilterStore] = useState<string>('all');
+  const [filterDateFrom, setFilterDateFrom] = useState('');
+  const [filterDateTo, setFilterDateTo] = useState('');
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
@@ -56,9 +59,15 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
       const store = storeMap.get(p.storeId);
       const matchSearch = !search || p.invoiceNumber.toLowerCase().includes(search.toLowerCase()) || store?.name.toLowerCase().includes(search.toLowerCase());
       const matchStatus = filterStatus === 'all' || p.status === filterStatus;
-      return matchSearch && matchStatus;
+      const matchStore = filterStore === 'all' || p.storeId === filterStore;
+      const matchDateFrom = !filterDateFrom || p.dueDate >= filterDateFrom;
+      const matchDateTo = !filterDateTo || p.dueDate <= filterDateTo;
+      return matchSearch && matchStatus && matchStore && matchDateFrom && matchDateTo;
     });
-  }, [piutangs, search, filterStatus, storeMap]);
+  }, [piutangs, search, filterStatus, filterStore, filterDateFrom, filterDateTo, storeMap]);
+
+  const hasActiveFilters = filterStatus !== 'all' || filterStore !== 'all' || filterDateFrom || filterDateTo;
+  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); };
 
   const handleAddPiutang = async () => {
     const amount = parseRupiahInput(newForm.amount);
@@ -152,23 +161,46 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
         </Dialog>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Cari invoice atau toko..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Cari invoice atau toko..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <Filter className="mr-2 h-4 w-4" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Status</SelectItem>
+              <SelectItem value="belum_lunas">Belum Lunas</SelectItem>
+              <SelectItem value="jatuh_tempo">Jatuh Tempo</SelectItem>
+              <SelectItem value="lunas">Lunas</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterStore} onValueChange={setFilterStore}>
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Semua Toko" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Toko</SelectItem>
+              {stores.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Filter className="mr-2 h-4 w-4" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Semua Status</SelectItem>
-            <SelectItem value="belum_lunas">Belum Lunas</SelectItem>
-            <SelectItem value="jatuh_tempo">Jatuh Tempo</SelectItem>
-            <SelectItem value="lunas">Lunas</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Jatuh tempo:</span>
+            <Input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="w-[150px]" />
+            <span className="text-muted-foreground text-sm">s/d</span>
+            <Input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="w-[150px]" />
+          </div>
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={resetFilters}>Reset Filter</Button>
+          )}
+          <span className="text-sm text-muted-foreground ml-auto">{filtered.length} dari {piutangs.length} piutang</span>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
