@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      cash_drawer_deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      operational_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          type: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          type: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          type?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number

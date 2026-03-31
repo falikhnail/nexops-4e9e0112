@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 
 interface LayoutProps {
@@ -13,6 +13,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'stores', label: 'Toko', icon: Store },
   { id: 'piutang', label: 'Piutang', icon: FileText },
+  { id: 'operasional', label: 'Operasional', icon: Briefcase },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
 ];
 
