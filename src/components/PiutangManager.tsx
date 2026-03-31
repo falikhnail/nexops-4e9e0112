@@ -33,6 +33,9 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   const [openPayment, setOpenPayment] = useState<string | null>(null);
   const [openDetail, setOpenDetail] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterStore, setFilterStore] = useState<string>('all');
+  const [filterDateFrom, setFilterDateFrom] = useState('');
+  const [filterDateTo, setFilterDateTo] = useState('');
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
