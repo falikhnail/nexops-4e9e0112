@@ -37,6 +37,7 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<string>('due_asc');
   const { toast } = useToast();
 
   const [newForm, setNewForm] = useState({ storeId: '', amount: '', dueDate: '', description: '' });
@@ -55,7 +56,7 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   useEffect(() => { refresh(); }, []);
 
   const filtered = useMemo(() => {
-    return piutangs.filter(p => {
+    const list = piutangs.filter(p => {
       const store = storeMap.get(p.storeId);
       const matchSearch = !search || p.invoiceNumber.toLowerCase().includes(search.toLowerCase()) || store?.name.toLowerCase().includes(search.toLowerCase());
       const matchStatus = filterStatus === 'all' || p.status === filterStatus;
@@ -64,10 +65,20 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
       const matchDateTo = !filterDateTo || p.dueDate <= filterDateTo;
       return matchSearch && matchStatus && matchStore && matchDateFrom && matchDateTo;
     });
-  }, [piutangs, search, filterStatus, filterStore, filterDateFrom, filterDateTo, storeMap]);
+
+    return list.sort((a, b) => {
+      switch (sortBy) {
+        case 'due_asc': return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        case 'due_desc': return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+        case 'amount_desc': return b.remainingAmount - a.remainingAmount;
+        case 'amount_asc': return a.remainingAmount - b.remainingAmount;
+        default: return 0;
+      }
+    });
+  }, [piutangs, search, filterStatus, filterStore, filterDateFrom, filterDateTo, storeMap, sortBy]);
 
   const hasActiveFilters = filterStatus !== 'all' || filterStore !== 'all' || filterDateFrom || filterDateTo;
-  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); };
+  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); setSortBy('due_asc'); };
 
   const handleAddPiutang = async () => {
     const amount = parseRupiahInput(newForm.amount);
@@ -198,6 +209,17 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
             <span className="text-muted-foreground text-sm">s/d</span>
             <Input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="w-[150px]" />
           </div>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-[220px]">
+              <SelectValue placeholder="Urutkan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="due_asc">Jatuh Tempo Terdekat</SelectItem>
+              <SelectItem value="due_desc">Jatuh Tempo Terjauh</SelectItem>
+              <SelectItem value="amount_desc">Sisa Terbesar</SelectItem>
+              <SelectItem value="amount_asc">Sisa Terkecil</SelectItem>
+            </SelectContent>
+          </Select>
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={resetFilters}>Reset Filter</Button>
           )}
