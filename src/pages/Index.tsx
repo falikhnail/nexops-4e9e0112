@@ -16,6 +16,7 @@ const Index = () => {
       {activeTab === 'dashboard' && <Dashboard key={key} />}
       {activeTab === 'stores' && <StoreManager key={key} onUpdate={forceUpdate} />}
       {activeTab === 'piutang' && <PiutangManager key={key} onUpdate={forceUpdate} />}
+      {activeTab === 'operasional' && <OperasionalManager key={key} onUpdate={forceUpdate} />}
       {activeTab === 'rekap' && <StoreSummary key={key} />}
     </Layout>
   );

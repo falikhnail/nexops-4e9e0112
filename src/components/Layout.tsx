@@ -13,6 +13,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'stores', label: 'Toko', icon: Store },
   { id: 'piutang', label: 'Piutang', icon: FileText },
+  { id: 'operasional', label: 'Operasional', icon: Briefcase },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
 ];
 
