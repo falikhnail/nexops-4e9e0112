@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 
 interface LayoutProps {
