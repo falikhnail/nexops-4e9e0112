@@ -209,6 +209,17 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
             <span className="text-muted-foreground text-sm">s/d</span>
             <Input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="w-[150px]" />
           </div>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-[220px]">
+              <SelectValue placeholder="Urutkan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="due_asc">Jatuh Tempo Terdekat</SelectItem>
+              <SelectItem value="due_desc">Jatuh Tempo Terjauh</SelectItem>
+              <SelectItem value="amount_desc">Sisa Terbesar</SelectItem>
+              <SelectItem value="amount_asc">Sisa Terkecil</SelectItem>
+            </SelectContent>
+          </Select>
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={resetFilters}>Reset Filter</Button>
           )}
