@@ -111,13 +111,15 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
 
   const formatCurrency = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
-  const getAging = (createdAt: string) => differenceInDays(new Date(), new Date(createdAt));
-  const getAgingLabel = (days: number) => {
-    if (days <= 0) return { label: 'Hari ini', color: 'bg-success/10 text-success' };
-    if (days <= 14) return { label: `${days} hari`, color: 'bg-info/10 text-info' };
-    if (days <= 30) return { label: `${days} hari`, color: 'bg-warning/10 text-warning' };
-    return { label: `${days} hari`, color: 'bg-destructive/10 text-destructive' };
+  const getDueDays = (dueDate: string) => differenceInDays(new Date(dueDate), new Date());
+  const getDueLabel = (days: number) => {
+    if (days < 0) return { label: `Lewat ${Math.abs(days)} hari`, color: 'bg-destructive/10 text-destructive' };
+    if (days === 0) return { label: 'Jatuh tempo hari ini', color: 'bg-warning/10 text-warning' };
+    if (days <= 7) return { label: `${days} hari lagi`, color: 'bg-warning/10 text-warning' };
+    if (days <= 14) return { label: `${days} hari lagi`, color: 'bg-info/10 text-info' };
+    return { label: `${days} hari lagi`, color: 'bg-success/10 text-success' };
   };
+  const getAging = (createdAt: string) => differenceInDays(new Date(), new Date(createdAt));
 
   const statusLabel = (s: string) => s === 'lunas' ? 'Lunas' : s === 'jatuh_tempo' ? 'Jatuh Tempo' : 'Belum Lunas';
   const statusVariant = (s: string): 'default' | 'destructive' | 'secondary' => s === 'lunas' ? 'default' : s === 'jatuh_tempo' ? 'destructive' : 'secondary';
@@ -222,9 +224,9 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-foreground">{p.invoiceNumber}</span>
                         <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
-                        {(() => {
-                          const aging = getAging(p.createdAt);
-                          const { label, color } = getAgingLabel(aging);
+                        {p.status !== 'lunas' && (() => {
+                          const days = getDueDays(p.dueDate);
+                          const { label, color } = getDueLabel(days);
                           return <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold ${color}`}>⏱ {label}</span>;
                         })()}
                       </div>
