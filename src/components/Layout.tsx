@@ -19,10 +19,9 @@ const navItems = [
 
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="sticky top-0 h-screen w-64 border-r border-border bg-card flex flex-col shrink-0">
-        {/* Brand */}
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Sidebar — hidden on mobile */}
+      <aside className="hidden md:flex sticky top-0 h-screen w-64 border-r border-border bg-card flex-col shrink-0">
         <div className="flex items-center gap-3 px-5 py-5 border-b border-border">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <BarChart3 className="h-5 w-5 text-primary-foreground" />
@@ -33,7 +32,6 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
           </div>
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => (
             <button
@@ -45,7 +43,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
             >
               {activeTab === item.id && (
                 <motion.div
-                  layoutId="activeTab"
+                  layoutId="activeTabDesktop"
                   className="absolute inset-0 rounded-lg bg-primary"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
                 />
@@ -58,24 +56,29 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
           ))}
         </nav>
 
-        {/* Footer */}
         <div className="px-5 py-4 border-t border-border">
           <p className="text-xs text-muted-foreground">© 2026 CV. Manunggal Karya</p>
         </div>
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0">
         {/* Top bar */}
-        <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-card/80 backdrop-blur-lg px-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            {navItems.find(n => n.id === activeTab)?.label}
-          </h2>
+        <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-card/80 backdrop-blur-lg px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            {/* Mobile brand */}
+            <div className="flex md:hidden h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <BarChart3 className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <h2 className="text-base md:text-lg font-semibold text-foreground">
+              {navItems.find(n => n.id === activeTab)?.label}
+            </h2>
+          </div>
           <NotificationBell />
         </header>
 
         {/* Content */}
-        <main className="flex-1 px-6 py-6">
+        <main className="flex-1 px-4 py-4 md:px-6 md:py-6">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 8 }}
@@ -86,6 +89,29 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
           </motion.div>
         </main>
       </div>
+
+      {/* Bottom Navigation — mobile only */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-border bg-card/95 backdrop-blur-lg safe-area-pb">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onTabChange(item.id)}
+            className={`relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors ${
+              activeTab === item.id ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            {activeTab === item.id && (
+              <motion.div
+                layoutId="activeTabMobile"
+                className="absolute top-0 left-2 right-2 h-0.5 rounded-full bg-primary"
+                transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+              />
+            )}
+            <item.icon className="h-5 w-5" />
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }
