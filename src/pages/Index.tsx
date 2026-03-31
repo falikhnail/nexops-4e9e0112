@@ -4,6 +4,7 @@ import Dashboard from '@/components/Dashboard';
 import StoreManager from '@/components/StoreManager';
 import PiutangManager from '@/components/PiutangManager';
 import StoreSummary from '@/components/StoreSummary';
+import OperasionalManager from '@/components/OperasionalManager';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
