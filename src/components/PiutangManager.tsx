@@ -78,7 +78,7 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   }, [piutangs, search, filterStatus, filterStore, filterDateFrom, filterDateTo, storeMap, sortBy]);
 
   const hasActiveFilters = filterStatus !== 'all' || filterStore !== 'all' || filterDateFrom || filterDateTo;
-  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); };
+  const resetFilters = () => { setFilterStatus('all'); setFilterStore('all'); setFilterDateFrom(''); setFilterDateTo(''); setSearch(''); setSortBy('due_asc'); };
 
   const handleAddPiutang = async () => {
     const amount = parseRupiahInput(newForm.amount);
