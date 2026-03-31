@@ -224,9 +224,9 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-foreground">{p.invoiceNumber}</span>
                         <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
-                        {(() => {
-                          const aging = getAging(p.createdAt);
-                          const { label, color } = getAgingLabel(aging);
+                        {p.status !== 'lunas' && (() => {
+                          const days = getDueDays(p.dueDate);
+                          const { label, color } = getDueLabel(days);
                           return <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold ${color}`}>⏱ {label}</span>;
                         })()}
                       </div>
