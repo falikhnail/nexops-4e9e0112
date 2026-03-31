@@ -37,6 +37,7 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<string>('due_asc');
   const { toast } = useToast();
 
   const [newForm, setNewForm] = useState({ storeId: '', amount: '', dueDate: '', description: '' });
