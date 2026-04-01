@@ -25,7 +25,7 @@ const parseRupiahInput = (value: string): number => {
 
 const formatCurrency = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
-export default function OperasionalManager({ onUpdate }: { onUpdate: () => void }) {
+export default function OperasionalManager() {
   const [transactions, setTransactions] = useState<OperationalTransaction[]>([]);
   const [deposits, setDeposits] = useState<CashDrawerDeposit[]>([]);
   const [cashDrawerBalance, setCashDrawerBalance] = useState(0);
@@ -60,7 +60,6 @@ export default function OperasionalManager({ onUpdate }: { onUpdate: () => void 
     setTransactions(txns);
     setCashDrawerBalance(bal);
     setDeposits(deps);
-    onUpdate();
   };
 
   useEffect(() => { refresh(); }, []);
