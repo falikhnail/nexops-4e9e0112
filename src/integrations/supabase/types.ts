@@ -38,35 +38,73 @@ export type Database = {
         }
         Relationships: []
       }
+      operational_categories: {
+        Row: {
+          created_at: string
+          id: string
+          is_preset: boolean
+          name: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_preset?: boolean
+          name: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_preset?: boolean
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
       operational_transactions: {
         Row: {
           amount: number
           category: string
+          category_id: string | null
           created_at: string
           date: string
           description: string | null
           id: string
+          receipt_url: string | null
           type: string
         }
         Insert: {
           amount: number
           category: string
+          category_id?: string | null
           created_at?: string
           date: string
           description?: string | null
           id?: string
+          receipt_url?: string | null
           type: string
         }
         Update: {
           amount?: number
           category?: string
+          category_id?: string | null
           created_at?: string
           date?: string
           description?: string | null
           id?: string
+          receipt_url?: string | null
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "operational_transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "operational_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payments: {
         Row: {
