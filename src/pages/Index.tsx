@@ -5,6 +5,7 @@ import StoreManager from '@/components/StoreManager';
 import PiutangManager from '@/components/PiutangManager';
 import StoreSummary from '@/components/StoreSummary';
 import OperasionalManager from '@/components/OperasionalManager';
+import LaporanBulanan from '@/components/LaporanBulanan';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -15,6 +16,7 @@ const Index = () => {
       {activeTab === 'stores' && <StoreManager />}
       {activeTab === 'piutang' && <PiutangManager />}
       {activeTab === 'operasional' && <OperasionalManager />}
+      {activeTab === 'laporan' && <LaporanBulanan />}
       {activeTab === 'rekap' && <StoreSummary />}
     </Layout>
   );

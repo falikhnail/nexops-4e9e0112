@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ const navItems = [
   { id: 'stores', label: 'Toko', icon: Store },
   { id: 'piutang', label: 'Piutang', icon: FileText },
   { id: 'operasional', label: 'Operasional', icon: Briefcase },
+  { id: 'laporan', label: 'Laporan', icon: CalendarDays },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
 ];
 
