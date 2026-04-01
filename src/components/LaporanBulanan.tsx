@@ -261,7 +261,7 @@ export default function LaporanBulanan() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Grafik Harian — {monthLabel}
+              Grafik Harian — {rangeLabel}
             </CardTitle>
           </CardHeader>
           <CardContent>
