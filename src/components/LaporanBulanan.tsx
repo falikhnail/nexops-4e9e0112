@@ -404,7 +404,7 @@ export default function LaporanBulanan() {
       {filtered.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Detail Transaksi — {monthLabel}</CardTitle>
+            <CardTitle className="text-base">Detail Transaksi — {rangeLabel}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
