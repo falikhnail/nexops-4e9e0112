@@ -21,19 +21,19 @@ export default function ConnectionStatus() {
     return () => { mounted = false; clearInterval(interval); };
   }, []);
 
-  const color = status === 'connected' ? 'text-green-500' : status === 'disconnected' ? 'text-red-500' : 'text-muted-foreground';
-  const label = status === 'connected' ? 'Database terhubung' : status === 'disconnected' ? 'Database terputus' : 'Mengecek koneksi...';
+  const isConnected = status === 'connected';
+  const isChecking = status === 'checking';
+  const label = isConnected ? 'Database terhubung' : status === 'disconnected' ? 'Database terputus' : 'Mengecek...';
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs ${color}`}>
-          {status === 'disconnected' ? <WifiOff className="h-3.5 w-3.5" /> : <Wifi className="h-3.5 w-3.5" />}
-          <span className="hidden sm:inline">{status === 'connected' ? 'Online' : status === 'disconnected' ? 'Offline' : '...'}</span>
-          <span className={`h-2 w-2 rounded-full ${status === 'connected' ? 'bg-green-500' : status === 'disconnected' ? 'bg-red-500' : 'bg-muted-foreground'} ${status === 'checking' ? 'animate-pulse' : ''}`} />
+        <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
+          {status === 'disconnected' ? <WifiOff className="h-3 w-3 text-destructive" /> : <Wifi className="h-3 w-3 text-success" />}
+          <span className={`h-1.5 w-1.5 rounded-full ${isConnected ? 'bg-success' : status === 'disconnected' ? 'bg-destructive' : 'bg-muted-foreground'} ${isChecking ? 'animate-pulse' : ''}`} />
         </div>
       </TooltipTrigger>
-      <TooltipContent side="bottom"><p>{label}</p></TooltipContent>
+      <TooltipContent side="bottom"><p className="text-xs">{label}</p></TooltipContent>
     </Tooltip>
   );
 }
