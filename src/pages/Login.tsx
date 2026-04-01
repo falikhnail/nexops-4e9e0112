@@ -10,8 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const slides = [
   {
     icon: TrendingUp,
-    title: 'Lacak Piutang Real-time',
-    description: 'Pantau semua piutang toko secara real-time dengan dashboard yang informatif dan mudah dipahami.',
+    title: 'Kelola Bisnis Real-time',
+    description: 'Pantau piutang toko dan operasional perusahaan secara real-time dengan dashboard yang informatif.',
     gradient: 'from-primary/20 to-accent/20',
   },
   {
@@ -22,8 +22,8 @@ const slides = [
   },
   {
     icon: Bell,
-    title: 'Notifikasi Jatuh Tempo',
-    description: 'Dapatkan pengingat otomatis untuk piutang yang akan atau sudah melewati jatuh tempo.',
+    title: 'Manajemen Operasional Lengkap',
+    description: 'Catat pemasukan, pengeluaran, dan pantau arus kas operasional perusahaan dengan mudah dan terstruktur.',
     gradient: 'from-primary/20 to-warning/20',
   },
 ];
