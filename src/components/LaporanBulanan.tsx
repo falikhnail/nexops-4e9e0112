@@ -3,9 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { TrendingUp, TrendingDown, Wallet, Calendar, BarChart3 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, parse } from 'date-fns';
+import { format, startOfMonth, endOfMonth, parse, subDays } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { getOperationalTransactions, getOperationalCategories, type OperationalTransaction, type OperationalCategory } from '@/lib/operasional';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -18,26 +22,50 @@ const COLORS = [
   'hsl(25, 80%, 50%)',
 ];
 
-function getMonthOptions() {
-  const options: { value: string; label: string }[] = [];
+type PresetKey = 'this_month' | 'last_month' | 'last_7' | 'last_30' | 'custom';
+
+const PRESETS: { value: PresetKey; label: string }[] = [
+  { value: 'this_month', label: 'Bulan Ini' },
+  { value: 'last_month', label: 'Bulan Lalu' },
+  { value: 'last_7', label: '7 Hari Terakhir' },
+  { value: 'last_30', label: '30 Hari Terakhir' },
+  { value: 'custom', label: 'Rentang Custom' },
+];
+
+function getPresetRange(key: PresetKey): { from: Date; to: Date } {
   const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    options.push({
-      value: format(d, 'yyyy-MM'),
-      label: format(d, 'MMMM yyyy', { locale: idLocale }),
-    });
+  switch (key) {
+    case 'this_month':
+      return { from: startOfMonth(now), to: endOfMonth(now) };
+    case 'last_month': {
+      const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      return { from: d, to: endOfMonth(d) };
+    }
+    case 'last_7':
+      return { from: subDays(now, 6), to: now };
+    case 'last_30':
+      return { from: subDays(now, 29), to: now };
+    default:
+      return { from: startOfMonth(now), to: endOfMonth(now) };
   }
-  return options;
 }
 
 export default function LaporanBulanan() {
   const [transactions, setTransactions] = useState<OperationalTransaction[]>([]);
   const [categories, setCategories] = useState<OperationalCategory[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [preset, setPreset] = useState<PresetKey>('this_month');
+  const [dateFrom, setDateFrom] = useState<Date>(startOfMonth(new Date()));
+  const [dateTo, setDateTo] = useState<Date>(endOfMonth(new Date()));
   const [loading, setLoading] = useState(true);
 
-  const monthOptions = useMemo(() => getMonthOptions(), []);
+  // Update dates when preset changes
+  useEffect(() => {
+    if (preset !== 'custom') {
+      const range = getPresetRange(preset);
+      setDateFrom(range.from);
+      setDateTo(range.to);
+    }
+  }, [preset]);
 
   useEffect(() => {
     async function load() {
@@ -59,11 +87,10 @@ export default function LaporanBulanan() {
   }, []);
 
   const filtered = useMemo(() => {
-    const monthStart = `${selectedMonth}-01`;
-    const d = parse(monthStart, 'yyyy-MM-dd', new Date());
-    const end = format(endOfMonth(d), 'yyyy-MM-dd');
-    return transactions.filter(t => t.date >= monthStart && t.date <= end);
-  }, [transactions, selectedMonth]);
+    const from = format(dateFrom, 'yyyy-MM-dd');
+    const to = format(dateTo, 'yyyy-MM-dd');
+    return transactions.filter(t => t.date >= from && t.date <= to);
+  }, [transactions, dateFrom, dateTo]);
 
   const totalPemasukan = useMemo(() => filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0), [filtered]);
   const totalPengeluaran = useMemo(() => filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0), [filtered]);
@@ -96,15 +123,12 @@ export default function LaporanBulanan() {
 
   // Daily chart data
   const dailyData = useMemo(() => {
-    const monthStart = `${selectedMonth}-01`;
-    const d = parse(monthStart, 'yyyy-MM-dd', new Date());
-    const end = endOfMonth(d);
     const days = new Map<string, { date: string; pemasukan: number; pengeluaran: number }>();
     
-    let current = new Date(d);
-    while (current <= end) {
+    let current = new Date(dateFrom);
+    while (current <= dateTo) {
       const key = format(current, 'yyyy-MM-dd');
-      days.set(key, { date: format(current, 'dd'), pemasukan: 0, pengeluaran: 0 });
+      days.set(key, { date: format(current, 'dd/MM'), pemasukan: 0, pengeluaran: 0 });
       current.setDate(current.getDate() + 1);
     }
 
@@ -117,9 +141,9 @@ export default function LaporanBulanan() {
     });
 
     return Array.from(days.values());
-  }, [filtered, selectedMonth]);
+  }, [filtered, dateFrom, dateTo]);
 
-  const monthLabel = monthOptions.find(m => m.value === selectedMonth)?.label || selectedMonth;
+  const rangeLabel = `${format(dateFrom, 'dd MMM yyyy', { locale: idLocale })} — ${format(dateTo, 'dd MMM yyyy', { locale: idLocale })}`;
 
   if (loading) {
     return <div className="flex items-center justify-center py-20 text-muted-foreground">Memuat data...</div>;
@@ -130,20 +154,62 @@ export default function LaporanBulanan() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Laporan Bulanan</h2>
-          <p className="text-sm text-muted-foreground">Rekap lengkap operasional per bulan</p>
+          <h2 className="text-xl font-bold text-foreground">Laporan Operasional</h2>
+          <p className="text-sm text-muted-foreground">{rangeLabel}</p>
         </div>
-        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger className="w-[200px]">
-            <Calendar className="h-4 w-4 mr-2" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {monthOptions.map(m => (
-              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
+            <SelectTrigger className="w-[180px]">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PRESETS.map(p => (
+                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {preset === 'custom' && (
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("w-[130px] justify-start text-left font-normal text-xs")}>
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {format(dateFrom, 'dd/MM/yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarPicker
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={(d) => d && setDateFrom(d)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              <span className="text-xs text-muted-foreground">s/d</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("w-[130px] justify-start text-left font-normal text-xs")}>
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {format(dateTo, 'dd/MM/yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <CalendarPicker
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={(d) => d && setDateTo(d)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -195,7 +261,7 @@ export default function LaporanBulanan() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Grafik Harian — {monthLabel}
+              Grafik Harian — {rangeLabel}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -338,7 +404,7 @@ export default function LaporanBulanan() {
       {filtered.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Detail Transaksi — {monthLabel}</CardTitle>
+            <CardTitle className="text-base">Detail Transaksi — {rangeLabel}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
