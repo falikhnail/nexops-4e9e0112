@@ -232,10 +232,8 @@ export default function OperasionalManager({ onUpdate }: { onUpdate: () => void 
           </Button>
         )}
         <div className="ml-auto">
+          <Button onClick={() => setOpenNew(true)}><Plus className="h-4 w-4 mr-2" /> Tambah Transaksi</Button>
           <Dialog open={openNew} onOpenChange={setOpenNew}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" /> Tambah Transaksi</Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Tambah Transaksi Operasional</DialogTitle>

@@ -143,10 +143,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
           <h2 className="text-2xl font-bold text-foreground">Daftar Piutang</h2>
           <p className="text-muted-foreground">Kelola dan pantau semua piutang</p>
         </div>
+        <Button className="gap-2" onClick={() => setOpenNew(true)}><Plus className="h-4 w-4" /> Tambah Piutang</Button>
         <Dialog open={openNew} onOpenChange={setOpenNew}>
-          <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="h-4 w-4" /> Tambah Piutang</Button>
-          </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Tambah Piutang Baru</DialogTitle></DialogHeader>
             <div className="space-y-4 pt-2">
