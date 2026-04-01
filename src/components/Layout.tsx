@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
+import ConnectionStatus from '@/components/ConnectionStatus';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
