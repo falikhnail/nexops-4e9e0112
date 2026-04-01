@@ -26,6 +26,18 @@ const slides = [
     description: 'Catat pemasukan, pengeluaran, dan pantau arus kas operasional perusahaan dengan mudah dan terstruktur.',
     gradient: 'from-primary/20 to-warning/20',
   },
+  {
+    icon: CalendarDays,
+    title: 'Laporan Keuangan Terperinci',
+    description: 'Lihat laporan pemasukan & pengeluaran harian dengan grafik visual, filter rentang tanggal, dan preset periode yang fleksibel.',
+    gradient: 'from-warning/20 to-accent/20',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Rekap Piutang Per Toko',
+    description: 'Pantau ringkasan piutang setiap toko lengkap dengan progres pembayaran, status aging, dan akses cepat ke detail transaksi.',
+    gradient: 'from-accent/20 to-primary/20',
+  },
 ];
 
 export default function Login() {
