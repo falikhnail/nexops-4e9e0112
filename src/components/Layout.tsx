@@ -59,8 +59,12 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
           ))}
         </nav>
 
-        <div className="px-5 py-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">© 2026 CV. Manunggal Karya</p>
+        <div className="px-3 py-4 border-t border-border space-y-2">
+          <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive" onClick={signOut}>
+            <LogOut className="h-4 w-4" />
+            <span>Keluar</span>
+          </Button>
+          <p className="text-xs text-muted-foreground px-2">© 2026 CV. Manunggal Karya</p>
         </div>
       </aside>
 
