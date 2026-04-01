@@ -62,6 +62,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
         </nav>
 
         <div className="px-3 py-4 border-t border-border space-y-2">
+          <ConnectionStatus />
           <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive" onClick={signOut}>
             <LogOut className="h-4 w-4" />
             <span>Keluar</span>
