@@ -173,10 +173,8 @@ export default function OperasionalManager({ onUpdate }: { onUpdate: () => void 
               </div>
             </div>
             <div className="flex gap-2 mt-3">
+              <Button size="sm" variant="outline" className="text-xs" onClick={() => setOpenDeposit(true)}>Setor ke Bank</Button>
               <Dialog open={openDeposit} onOpenChange={setOpenDeposit}>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="text-xs">Setor ke Bank</Button>
-                </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Setor Uang Laci ke Bank</DialogTitle>
