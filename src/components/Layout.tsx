@@ -1,7 +1,9 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,6 +20,7 @@ const navItems = [
 ];
 
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
+  const { signOut } = useAuth();
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Sidebar — hidden on mobile */}
@@ -56,8 +59,12 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
           ))}
         </nav>
 
-        <div className="px-5 py-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">© 2026 CV. Manunggal Karya</p>
+        <div className="px-3 py-4 border-t border-border space-y-2">
+          <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive" onClick={signOut}>
+            <LogOut className="h-4 w-4" />
+            <span>Keluar</span>
+          </Button>
+          <p className="text-xs text-muted-foreground px-2">© 2026 CV. Manunggal Karya</p>
         </div>
       </aside>
 
@@ -74,7 +81,12 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
               {navItems.find(n => n.id === activeTab)?.label}
             </h2>
           </div>
-          <NotificationBell />
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-destructive" onClick={signOut}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </header>
 
         {/* Content */}
