@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, MessageSquare, CreditCard, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -143,10 +143,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
           <h2 className="text-2xl font-bold text-foreground">Daftar Piutang</h2>
           <p className="text-muted-foreground">Kelola dan pantau semua piutang</p>
         </div>
+        <Button className="gap-2" onClick={() => setOpenNew(true)}><Plus className="h-4 w-4" /> Tambah Piutang</Button>
         <Dialog open={openNew} onOpenChange={setOpenNew}>
-          <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="h-4 w-4" /> Tambah Piutang</Button>
-          </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Tambah Piutang Baru</DialogTitle></DialogHeader>
             <div className="space-y-4 pt-2">
@@ -266,10 +264,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                       <div className="flex gap-1.5">
                         {p.status !== 'lunas' && (
                           <>
+                            <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setOpenPayment(p.id)}><CreditCard className="h-3.5 w-3.5" /> Bayar</Button>
                             <Dialog open={openPayment === p.id} onOpenChange={o => { setOpenPayment(o ? p.id : null); if (!o) setPayForm({ amount: '', category: 'transfer', date: '', notes: '' }); }}>
-                              <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-1.5 text-xs"><CreditCard className="h-3.5 w-3.5" /> Bayar</Button>
-                              </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader><DialogTitle>Catat Pembayaran</DialogTitle></DialogHeader>
                                 <p className="text-sm text-muted-foreground">Sisa: {formatCurrency(p.remainingAmount)}</p>
@@ -303,10 +299,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                             </Button>
                           </>
                         )}
+                        <Button variant="ghost" size="sm" className="text-xs" onClick={() => setOpenDetail(p.id)}>Detail</Button>
                         <Dialog open={openDetail === p.id} onOpenChange={o => setOpenDetail(o ? p.id : null)}>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-xs">Detail</Button>
-                          </DialogTrigger>
                           <DialogContent className="max-w-md">
                             <DialogHeader><DialogTitle>Detail Piutang</DialogTitle></DialogHeader>
                             <div className="space-y-3">

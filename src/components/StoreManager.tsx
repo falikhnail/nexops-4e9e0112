@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Edit2, Trash2, Phone, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -66,26 +66,25 @@ export default function StoreManager({ onUpdate }: { onUpdate: () => void }) {
           <h2 className="text-2xl font-bold text-foreground">Daftar Toko</h2>
           <p className="text-muted-foreground">Kelola data toko dan kontak</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={openNew} className="gap-2">
-              <Plus className="h-4 w-4" /> Tambah Toko
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editing ? 'Edit Toko' : 'Tambah Toko Baru'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div><Label>Nama Toko</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-              <div><Label>Nama Pemilik</Label><Input value={form.ownerName} onChange={e => setForm({...form, ownerName: e.target.value})} /></div>
-              <div><Label>Nomor WhatsApp</Label><Input value={form.whatsappNumber} onChange={e => setForm({...form, whatsappNumber: e.target.value})} /></div>
-              <div><Label>Alamat</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
-              <Button onClick={handleSubmit} className="w-full">{editing ? 'Simpan Perubahan' : 'Tambah Toko'}</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openNew} className="gap-2">
+          <Plus className="h-4 w-4" /> Tambah Toko
+        </Button>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit Toko' : 'Tambah Toko Baru'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div><Label>Nama Toko</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
+            <div><Label>Nama Pemilik</Label><Input value={form.ownerName} onChange={e => setForm({...form, ownerName: e.target.value})} /></div>
+            <div><Label>Nomor WhatsApp</Label><Input value={form.whatsappNumber} onChange={e => setForm({...form, whatsappNumber: e.target.value})} /></div>
+            <div><Label>Alamat</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
+            <Button onClick={handleSubmit} className="w-full">{editing ? 'Simpan Perubahan' : 'Tambah Toko'}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {stores.length === 0 ? (
         <Card className="border-dashed border-2 border-border">

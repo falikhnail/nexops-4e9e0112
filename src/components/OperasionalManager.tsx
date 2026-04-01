@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, Landmark, ArrowUpRight, ArrowDownRight, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -173,10 +173,8 @@ export default function OperasionalManager({ onUpdate }: { onUpdate: () => void 
               </div>
             </div>
             <div className="flex gap-2 mt-3">
+              <Button size="sm" variant="outline" className="text-xs" onClick={() => setOpenDeposit(true)}>Setor ke Bank</Button>
               <Dialog open={openDeposit} onOpenChange={setOpenDeposit}>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="text-xs">Setor ke Bank</Button>
-                </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Setor Uang Laci ke Bank</DialogTitle>
@@ -234,10 +232,8 @@ export default function OperasionalManager({ onUpdate }: { onUpdate: () => void 
           </Button>
         )}
         <div className="ml-auto">
+          <Button onClick={() => setOpenNew(true)}><Plus className="h-4 w-4 mr-2" /> Tambah Transaksi</Button>
           <Dialog open={openNew} onOpenChange={setOpenNew}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" /> Tambah Transaksi</Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Tambah Transaksi Operasional</DialogTitle>
