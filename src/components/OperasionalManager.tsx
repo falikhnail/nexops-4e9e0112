@@ -494,7 +494,7 @@ export default function OperasionalManager() {
 
       {/* ===== DIALOGS ===== */}
       <Dialog open={openNew} onOpenChange={(o) => { setOpenNew(o); if (!o) { setReceiptFile(null); setReceiptPreview(null); } }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg w-[95vw]">
           <DialogHeader><DialogTitle>Tambah Transaksi Operasional</DialogTitle></DialogHeader>
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
             <div>
