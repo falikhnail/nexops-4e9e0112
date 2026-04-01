@@ -89,7 +89,7 @@ export default function Login() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
               <BarChart3 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-white/90 font-semibold text-lg tracking-tight">Piutang Tracker</span>
+            <span className="text-white/90 font-semibold text-lg tracking-tight">NexOps</span>
           </div>
 
           {/* Slider */}
