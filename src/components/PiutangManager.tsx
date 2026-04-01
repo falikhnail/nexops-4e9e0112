@@ -264,10 +264,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                       <div className="flex gap-1.5">
                         {p.status !== 'lunas' && (
                           <>
+                            <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setOpenPayment(p.id)}><CreditCard className="h-3.5 w-3.5" /> Bayar</Button>
                             <Dialog open={openPayment === p.id} onOpenChange={o => { setOpenPayment(o ? p.id : null); if (!o) setPayForm({ amount: '', category: 'transfer', date: '', notes: '' }); }}>
-                              <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-1.5 text-xs"><CreditCard className="h-3.5 w-3.5" /> Bayar</Button>
-                              </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader><DialogTitle>Catat Pembayaran</DialogTitle></DialogHeader>
                                 <p className="text-sm text-muted-foreground">Sisa: {formatCurrency(p.remainingAmount)}</p>
