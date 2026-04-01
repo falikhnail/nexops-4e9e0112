@@ -66,12 +66,10 @@ export default function StoreManager({ onUpdate }: { onUpdate: () => void }) {
           <h2 className="text-2xl font-bold text-foreground">Daftar Toko</h2>
           <p className="text-muted-foreground">Kelola data toko dan kontak</p>
         </div>
+        <Button onClick={openNew} className="gap-2">
+          <Plus className="h-4 w-4" /> Tambah Toko
+        </Button>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={openNew} className="gap-2">
-              <Plus className="h-4 w-4" /> Tambah Toko
-            </Button>
-          </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{editing ? 'Edit Toko' : 'Tambah Toko Baru'}</DialogTitle>
