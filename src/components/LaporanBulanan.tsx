@@ -123,15 +123,12 @@ export default function LaporanBulanan() {
 
   // Daily chart data
   const dailyData = useMemo(() => {
-    const monthStart = `${selectedMonth}-01`;
-    const d = parse(monthStart, 'yyyy-MM-dd', new Date());
-    const end = endOfMonth(d);
     const days = new Map<string, { date: string; pemasukan: number; pengeluaran: number }>();
     
-    let current = new Date(d);
-    while (current <= end) {
+    let current = new Date(dateFrom);
+    while (current <= dateTo) {
       const key = format(current, 'yyyy-MM-dd');
-      days.set(key, { date: format(current, 'dd'), pemasukan: 0, pengeluaran: 0 });
+      days.set(key, { date: format(current, 'dd/MM'), pemasukan: 0, pengeluaran: 0 });
       current.setDate(current.getDate() + 1);
     }
 
@@ -144,9 +141,9 @@ export default function LaporanBulanan() {
     });
 
     return Array.from(days.values());
-  }, [filtered, selectedMonth]);
+  }, [filtered, dateFrom, dateTo]);
 
-  const monthLabel = monthOptions.find(m => m.value === selectedMonth)?.label || selectedMonth;
+  const rangeLabel = `${format(dateFrom, 'dd MMM yyyy', { locale: idLocale })} — ${format(dateTo, 'dd MMM yyyy', { locale: idLocale })}`;
 
   if (loading) {
     return <div className="flex items-center justify-center py-20 text-muted-foreground">Memuat data...</div>;
@@ -157,20 +154,62 @@ export default function LaporanBulanan() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Laporan Bulanan</h2>
-          <p className="text-sm text-muted-foreground">Rekap lengkap operasional per bulan</p>
+          <h2 className="text-xl font-bold text-foreground">Laporan Operasional</h2>
+          <p className="text-sm text-muted-foreground">{rangeLabel}</p>
         </div>
-        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger className="w-[200px]">
-            <Calendar className="h-4 w-4 mr-2" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {monthOptions.map(m => (
-              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
+            <SelectTrigger className="w-[180px]">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PRESETS.map(p => (
+                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {preset === 'custom' && (
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("w-[130px] justify-start text-left font-normal text-xs")}>
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {format(dateFrom, 'dd/MM/yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarPicker
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={(d) => d && setDateFrom(d)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              <span className="text-xs text-muted-foreground">s/d</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("w-[130px] justify-start text-left font-normal text-xs")}>
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {format(dateTo, 'dd/MM/yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <CalendarPicker
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={(d) => d && setDateTo(d)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Summary cards */}
