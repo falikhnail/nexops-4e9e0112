@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Plus, Edit2, Trash2, Phone, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function StoreManager({ onUpdate }: { onUpdate: () => void }) {
+export default function StoreManager() {
   const [stores, setStores] = useState<Store[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Store | null>(null);
@@ -18,7 +18,6 @@ export default function StoreManager({ onUpdate }: { onUpdate: () => void }) {
 
   const refresh = async () => {
     setStores(await getStores());
-    onUpdate();
   };
 
   useEffect(() => { refresh(); }, []);

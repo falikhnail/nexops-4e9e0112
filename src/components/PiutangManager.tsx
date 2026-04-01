@@ -25,7 +25,7 @@ const parseRupiahInput = (value: string): number => {
   return Number(value.replace(/\D/g, '')) || 0;
 };
 
-export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
+export default function PiutangManager() {
   const [piutangs, setPiutangs] = useState<Piutang[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [storeMap, setStoreMap] = useState<Map<string, Store>>(new Map());
@@ -50,7 +50,6 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
     const map = new Map<string, Store>();
     s.forEach(st => map.set(st.id, st));
     setStoreMap(map);
-    onUpdate();
   };
 
   useEffect(() => { refresh(); }, []);
