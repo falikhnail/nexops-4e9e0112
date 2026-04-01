@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
+import ConnectionStatus from '@/components/ConnectionStatus';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -61,6 +62,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
         </nav>
 
         <div className="px-3 py-4 border-t border-border space-y-2">
+          <ConnectionStatus />
           <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive" onClick={signOut}>
             <LogOut className="h-4 w-4" />
             <span>Keluar</span>
@@ -83,6 +85,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
             </h2>
           </div>
           <div className="flex items-center gap-2">
+            <ConnectionStatus />
             <NotificationBell />
             <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-destructive" onClick={signOut}>
               <LogOut className="h-4 w-4" />
