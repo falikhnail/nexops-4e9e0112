@@ -16,6 +16,7 @@ const navItems = [
   { id: 'stores', label: 'Toko', icon: Store },
   { id: 'piutang', label: 'Piutang', icon: FileText },
   { id: 'operasional', label: 'Operasional', icon: Briefcase },
+  { id: 'laporan', label: 'Laporan', icon: CalendarDays },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
 ];
 
