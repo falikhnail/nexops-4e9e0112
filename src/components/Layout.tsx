@@ -81,7 +81,12 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
               {navItems.find(n => n.id === activeTab)?.label}
             </h2>
           </div>
-          <NotificationBell />
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-destructive" onClick={signOut}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </header>
 
         {/* Content */}
