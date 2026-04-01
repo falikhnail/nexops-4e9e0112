@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
       },
       manifest: {
-        name: "Piutang Tracker - CV. Manunggal Karya",
-        short_name: "Piutang Tracker",
+        name: "NexOps - CV Manunggal Karya",
+        short_name: "NexOps",
         description: "Aplikasi pencatatan piutang dan operasional CV. Manunggal Karya",
         theme_color: "#1e5bb8",
         background_color: "#f5f7fa",

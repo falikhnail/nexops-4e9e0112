@@ -10,8 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const slides = [
   {
     icon: TrendingUp,
-    title: 'Lacak Piutang Real-time',
-    description: 'Pantau semua piutang toko secara real-time dengan dashboard yang informatif dan mudah dipahami.',
+    title: 'Kelola Bisnis Real-time',
+    description: 'Pantau piutang toko dan operasional perusahaan secara real-time dengan dashboard yang informatif.',
     gradient: 'from-primary/20 to-accent/20',
   },
   {
@@ -22,8 +22,8 @@ const slides = [
   },
   {
     icon: Bell,
-    title: 'Notifikasi Jatuh Tempo',
-    description: 'Dapatkan pengingat otomatis untuk piutang yang akan atau sudah melewati jatuh tempo.',
+    title: 'Manajemen Operasional Lengkap',
+    description: 'Catat pemasukan, pengeluaran, dan pantau arus kas operasional perusahaan dengan mudah dan terstruktur.',
     gradient: 'from-primary/20 to-warning/20',
   },
 ];
@@ -89,7 +89,7 @@ export default function Login() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
               <BarChart3 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-white/90 font-semibold text-lg tracking-tight">Piutang Tracker</span>
+            <span className="text-white/90 font-semibold text-lg tracking-tight">NexOps</span>
           </div>
 
           {/* Slider */}
@@ -159,7 +159,7 @@ export default function Login() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary">
               <BarChart3 className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-foreground font-bold text-xl tracking-tight">Piutang Tracker</span>
+            <span className="text-foreground font-bold text-xl tracking-tight">NexOps</span>
           </div>
 
           {/* Heading */}
