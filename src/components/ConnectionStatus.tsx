@@ -2,9 +2,20 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Wifi, WifiOff } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useKeepAliveState } from '@/hooks/useKeepAlive';
+import { formatDistanceToNow } from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
 
 export default function ConnectionStatus() {
   const [status, setStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const { lastPingAt, lastPingOk } = useKeepAliveState();
+  const [, setTick] = useState(0);
+
+  // Re-render every 30s to update "x menit lalu" text
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -23,7 +34,12 @@ export default function ConnectionStatus() {
 
   const isConnected = status === 'connected';
   const isChecking = status === 'checking';
-  const label = isConnected ? 'Database terhubung' : status === 'disconnected' ? 'Database terputus' : 'Mengecek...';
+
+  const pingLabel = lastPingAt
+    ? `Ping terakhir: ${formatDistanceToNow(lastPingAt, { addSuffix: true, locale: localeId })} (${lastPingOk ? '✓' : '✗'})`
+    : 'Belum ada ping';
+
+  const statusLabel = isConnected ? 'Database terhubung' : status === 'disconnected' ? 'Database terputus' : 'Mengecek...';
 
   return (
     <Tooltip>
@@ -33,7 +49,12 @@ export default function ConnectionStatus() {
           <span className={`h-1.5 w-1.5 rounded-full ${isConnected ? 'bg-success' : status === 'disconnected' ? 'bg-destructive' : 'bg-muted-foreground'} ${isChecking ? 'animate-pulse' : ''}`} />
         </div>
       </TooltipTrigger>
-      <TooltipContent side="bottom"><p className="text-xs">{label}</p></TooltipContent>
+      <TooltipContent side="bottom">
+        <div className="space-y-0.5">
+          <p className="text-xs font-medium">{statusLabel}</p>
+          <p className="text-[10px] text-muted-foreground">{pingLabel}</p>
+        </div>
+      </TooltipContent>
     </Tooltip>
   );
 }

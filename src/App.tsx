@@ -29,10 +29,12 @@ function AppRoutes() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <KeepAliveContext.Provider value={keepAlive}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </KeepAliveContext.Provider>
   );
 }
 
