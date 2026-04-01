@@ -299,10 +299,8 @@ export default function PiutangManager({ onUpdate }: { onUpdate: () => void }) {
                             </Button>
                           </>
                         )}
+                        <Button variant="ghost" size="sm" className="text-xs" onClick={() => setOpenDetail(p.id)}>Detail</Button>
                         <Dialog open={openDetail === p.id} onOpenChange={o => setOpenDetail(o ? p.id : null)}>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-xs">Detail</Button>
-                          </DialogTrigger>
                           <DialogContent className="max-w-md">
                             <DialogHeader><DialogTitle>Detail Piutang</DialogTitle></DialogHeader>
                             <div className="space-y-3">
