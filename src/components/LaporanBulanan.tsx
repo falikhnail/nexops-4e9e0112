@@ -3,9 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { TrendingUp, TrendingDown, Wallet, Calendar, BarChart3 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, parse } from 'date-fns';
+import { format, startOfMonth, endOfMonth, parse, subDays } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { getOperationalTransactions, getOperationalCategories, type OperationalTransaction, type OperationalCategory } from '@/lib/operasional';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -18,26 +22,50 @@ const COLORS = [
   'hsl(25, 80%, 50%)',
 ];
 
-function getMonthOptions() {
-  const options: { value: string; label: string }[] = [];
+type PresetKey = 'this_month' | 'last_month' | 'last_7' | 'last_30' | 'custom';
+
+const PRESETS: { value: PresetKey; label: string }[] = [
+  { value: 'this_month', label: 'Bulan Ini' },
+  { value: 'last_month', label: 'Bulan Lalu' },
+  { value: 'last_7', label: '7 Hari Terakhir' },
+  { value: 'last_30', label: '30 Hari Terakhir' },
+  { value: 'custom', label: 'Rentang Custom' },
+];
+
+function getPresetRange(key: PresetKey): { from: Date; to: Date } {
   const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    options.push({
-      value: format(d, 'yyyy-MM'),
-      label: format(d, 'MMMM yyyy', { locale: idLocale }),
-    });
+  switch (key) {
+    case 'this_month':
+      return { from: startOfMonth(now), to: endOfMonth(now) };
+    case 'last_month': {
+      const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      return { from: d, to: endOfMonth(d) };
+    }
+    case 'last_7':
+      return { from: subDays(now, 6), to: now };
+    case 'last_30':
+      return { from: subDays(now, 29), to: now };
+    default:
+      return { from: startOfMonth(now), to: endOfMonth(now) };
   }
-  return options;
 }
 
 export default function LaporanBulanan() {
   const [transactions, setTransactions] = useState<OperationalTransaction[]>([]);
   const [categories, setCategories] = useState<OperationalCategory[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [preset, setPreset] = useState<PresetKey>('this_month');
+  const [dateFrom, setDateFrom] = useState<Date>(startOfMonth(new Date()));
+  const [dateTo, setDateTo] = useState<Date>(endOfMonth(new Date()));
   const [loading, setLoading] = useState(true);
 
-  const monthOptions = useMemo(() => getMonthOptions(), []);
+  // Update dates when preset changes
+  useEffect(() => {
+    if (preset !== 'custom') {
+      const range = getPresetRange(preset);
+      setDateFrom(range.from);
+      setDateTo(range.to);
+    }
+  }, [preset]);
 
   useEffect(() => {
     async function load() {
@@ -59,11 +87,10 @@ export default function LaporanBulanan() {
   }, []);
 
   const filtered = useMemo(() => {
-    const monthStart = `${selectedMonth}-01`;
-    const d = parse(monthStart, 'yyyy-MM-dd', new Date());
-    const end = format(endOfMonth(d), 'yyyy-MM-dd');
-    return transactions.filter(t => t.date >= monthStart && t.date <= end);
-  }, [transactions, selectedMonth]);
+    const from = format(dateFrom, 'yyyy-MM-dd');
+    const to = format(dateTo, 'yyyy-MM-dd');
+    return transactions.filter(t => t.date >= from && t.date <= to);
+  }, [transactions, dateFrom, dateTo]);
 
   const totalPemasukan = useMemo(() => filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0), [filtered]);
   const totalPengeluaran = useMemo(() => filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0), [filtered]);
