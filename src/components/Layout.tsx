@@ -32,7 +32,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
             <BarChart3 className="h-5 w-5 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-sidebar-foreground leading-tight">Piutang Tracker</h1>
+            <h1 className="text-sm font-bold text-sidebar-foreground leading-tight">NexOps</h1>
             <p className="text-[11px] text-sidebar-foreground/60">CV. Manunggal Karya</p>
           </div>
         </div>
