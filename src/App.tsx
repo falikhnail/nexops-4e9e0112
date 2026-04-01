@@ -8,12 +8,12 @@ import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { Loader2 } from "lucide-react";
-import { useKeepAlive } from "@/hooks/useKeepAlive";
+import { useKeepAlive, KeepAliveContext } from "@/hooks/useKeepAlive";
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  useKeepAlive();
+  const keepAlive = useKeepAlive();
   const { session, loading } = useAuth();
 
   if (loading) {
@@ -29,10 +29,12 @@ function AppRoutes() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <KeepAliveContext.Provider value={keepAlive}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </KeepAliveContext.Provider>
   );
 }
 
