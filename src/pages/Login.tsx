@@ -159,7 +159,7 @@ export default function Login() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary">
               <BarChart3 className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-foreground font-bold text-xl tracking-tight">Piutang Tracker</span>
+            <span className="text-foreground font-bold text-xl tracking-tight">NexOps</span>
           </div>
 
           {/* Heading */}
