@@ -20,6 +20,7 @@ const navItems = [
 ];
 
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
+  const { signOut } = useAuth();
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Sidebar — hidden on mobile */}
