@@ -2,61 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 30% 12%;
+    --background: 220 14% 96%;
+    --foreground: 222 28% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 12%;
+    --card-foreground: 222 28% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 12%;
+    --popover-foreground: 222 28% 14%;
 
-    --primary: 217 72% 40%;
+    --primary: 215 65% 36%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 220 30% 18%;
+    --secondary: 216 14% 93%;
+    --secondary-foreground: 222 28% 18%;
 
-    --muted: 210 16% 93%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 216 12% 91%;
+    --muted-foreground: 220 10% 44%;
 
-    --accent: 160 60% 40%;
+    --accent: 170 50% 36%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 217 72% 40%;
+    --border: 216 16% 87%;
+    --input: 216 16% 87%;
+    --ring: 215 65% 36%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
 
-    --success: 160 60% 40%;
+    --success: 160 50% 38%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 85% 48%;
     --warning-foreground: 0 0% 100%;
-    --info: 217 72% 40%;
+    --info: 215 65% 36%;
     --info-foreground: 0 0% 100%;
 
-    --sidebar-background: 220 30% 12%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 217 72% 55%;
+    --sidebar-background: 222 28% 14%;
+    --sidebar-foreground: 216 14% 85%;
+    --sidebar-primary: 215 65% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 25% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 20% 20%;
-    --sidebar-ring: 217 72% 55%;
+    --sidebar-accent: 222 22% 20%;
+    --sidebar-accent-foreground: 216 14% 85%;
+    --sidebar-border: 222 18% 22%;
+    --sidebar-ring: 215 65% 50%;
   }
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   * {
@@ -64,8 +60,41 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
+}
+
+@layer components {
+  /* Consistent card elevation */
+  .card-elevated {
+    @apply bg-card border border-border/60 shadow-sm;
+  }
+
+  /* Section headers */
+  .section-header {
+    @apply text-lg font-semibold text-foreground tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-muted-foreground;
   }
 }
 
