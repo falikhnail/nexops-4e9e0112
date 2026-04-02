@@ -25,7 +25,7 @@ export default function StoreSearchSelect({ stores, value, onValueChange }: Stor
   }, [stores, search]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
           {selected ? `${selected.name} - ${selected.ownerName}` : 'Pilih toko...'}
