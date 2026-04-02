@@ -103,11 +103,21 @@ export default function Dashboard() {
     );
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) return { text: 'Selamat Pagi', emoji: '☀️' };
+    if (hour >= 11 && hour < 15) return { text: 'Selamat Siang', emoji: '🌤️' };
+    if (hour >= 15 && hour < 18) return { text: 'Selamat Sore', emoji: '🌅' };
+    return { text: 'Selamat Malam', emoji: '🌙' };
+  };
+
+  const greeting = getGreeting();
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold text-foreground tracking-tight">Dashboard</h2>
+        <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
         <p className="text-sm text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
       </div>
 
