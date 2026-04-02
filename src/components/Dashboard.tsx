@@ -118,7 +118,8 @@ export default function Dashboard() {
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
-        <p className="text-sm text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
+        <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
+        <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
       </div>
 
       {/* Piutang Stats */}
