@@ -97,9 +97,11 @@ export default function StoreManager() {
             <Button variant="outline" onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> Tambah Toko</Button>
           </CardContent>
         </Card>
+      ) : filteredStores.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground py-8">Tidak ada toko yang cocok dengan pencarian "{search}"</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {stores.map((store) => (
+          {filteredStores.map((store) => (
             <Card key={store.id} className="border-border/50 hover:border-border transition-colors">
               <CardHeader className="pb-2 px-4 pt-4">
                 <CardTitle className="flex items-center justify-between text-sm">

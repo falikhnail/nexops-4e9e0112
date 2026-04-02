@@ -149,12 +149,7 @@ export default function PiutangManager() {
             <div className="space-y-4 pt-2">
               <div>
                 <Label>Toko</Label>
-                <Select value={newForm.storeId} onValueChange={v => setNewForm({...newForm, storeId: v})}>
-                  <SelectTrigger><SelectValue placeholder="Pilih toko" /></SelectTrigger>
-                  <SelectContent>
-                    {stores.map(s => <SelectItem key={s.id} value={s.id}>{s.name} - {s.ownerName}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <StoreSearchSelect stores={stores} value={newForm.storeId} onValueChange={v => setNewForm({...newForm, storeId: v})} />
               </div>
               <div>
                 <Label>Jumlah (Rp)</Label>
