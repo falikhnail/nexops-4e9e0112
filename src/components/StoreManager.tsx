@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, Phone, MapPin, User, Store as StoreIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Phone, MapPin, User, Store as StoreIcon, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function StoreManager() {
@@ -14,7 +14,14 @@ export default function StoreManager() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Store | null>(null);
   const [form, setForm] = useState({ name: '', ownerName: '', whatsappNumber: '', address: '' });
+  const [search, setSearch] = useState('');
   const { toast } = useToast();
+
+  const filteredStores = stores.filter(s => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return s.name.toLowerCase().includes(q) || s.ownerName.toLowerCase().includes(q) || s.whatsappNumber.includes(q) || (s.address && s.address.toLowerCase().includes(q));
+  });
 
   const refresh = async () => { setStores(await getStores()); };
   useEffect(() => { refresh(); }, []);
@@ -47,6 +54,11 @@ export default function StoreManager() {
         </Button>
       </div>
 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input placeholder="Cari toko, pemilik, atau nomor..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+      </div>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg w-[95vw]">
           <DialogHeader>
@@ -74,7 +86,7 @@ export default function StoreManager() {
         </DialogContent>
       </Dialog>
 
-      {stores.length === 0 ? (
+      {filteredStores.length === 0 && stores.length === 0 ? (
         <Card className="border-dashed border-2 border-border">
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted mb-4">
@@ -85,9 +97,11 @@ export default function StoreManager() {
             <Button variant="outline" onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> Tambah Toko</Button>
           </CardContent>
         </Card>
+      ) : filteredStores.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground py-8">Tidak ada toko yang cocok dengan pencarian "{search}"</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {stores.map((store) => (
+          {filteredStores.map((store) => (
             <Card key={store.id} className="border-border/50 hover:border-border transition-colors">
               <CardHeader className="pb-2 px-4 pt-4">
                 <CardTitle className="flex items-center justify-between text-sm">
