@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Piutang, Store } from '@/types';
+import StoreSearchSelect from '@/components/StoreSearchSelect';
 import { getPiutangs, getStores, addPiutang, deletePiutang, addPayment, sendWhatsAppReminder, getStoreById, refreshPiutangStatuses } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
