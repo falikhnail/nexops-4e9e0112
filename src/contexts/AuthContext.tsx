@@ -16,14 +16,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Mark session as active on load
+    sessionStorage.setItem('app_active', '1');
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
+      // If no active marker, user closed browser — sign out
+      if (session && !sessionStorage.getItem('app_active')) {
+        supabase.auth.signOut().then(() => {
+          setSession(null);
+          setLoading(false);
+        });
+      } else {
+        setSession(session);
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
