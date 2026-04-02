@@ -14,7 +14,14 @@ export default function StoreManager() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Store | null>(null);
   const [form, setForm] = useState({ name: '', ownerName: '', whatsappNumber: '', address: '' });
+  const [search, setSearch] = useState('');
   const { toast } = useToast();
+
+  const filteredStores = stores.filter(s => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return s.name.toLowerCase().includes(q) || s.ownerName.toLowerCase().includes(q) || s.whatsappNumber.includes(q) || (s.address && s.address.toLowerCase().includes(q));
+  });
 
   const refresh = async () => { setStores(await getStores()); };
   useEffect(() => { refresh(); }, []);
