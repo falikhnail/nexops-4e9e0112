@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, Phone, MapPin, User, Store as StoreIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Phone, MapPin, User, Store as StoreIcon, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function StoreManager() {
