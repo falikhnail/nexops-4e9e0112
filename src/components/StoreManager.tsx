@@ -86,7 +86,7 @@ export default function StoreManager() {
         </DialogContent>
       </Dialog>
 
-      {stores.length === 0 ? (
+      {filteredStores.length === 0 && stores.length === 0 ? (
         <Card className="border-dashed border-2 border-border">
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted mb-4">
