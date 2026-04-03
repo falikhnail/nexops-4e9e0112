@@ -5,6 +5,7 @@ import { getOperationalTransactions, getCashDrawerBalance } from '@/lib/operasio
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, AlertTriangle, CheckCircle, Clock, DollarSign, FileText, Wallet, ArrowDownCircle, ArrowUpCircle, Landmark } from 'lucide-react';
+import ExportDialog from '@/components/ExportDialog';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -116,10 +117,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
-        <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
-        <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
+          <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
+          <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
+        </div>
+        <ExportDialog />
       </div>
 
       {/* Piutang Stats */}
