@@ -117,10 +117,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
-        <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
-        <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-foreground tracking-tight">{greeting.emoji} {greeting.text}!</h2>
+          <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
+          <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
+        </div>
+        <ExportDialog />
       </div>
 
       {/* Piutang Stats */}
