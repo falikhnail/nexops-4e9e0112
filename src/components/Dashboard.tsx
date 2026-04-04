@@ -123,7 +123,6 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, d MMMM yyyy', { locale: idLocale })}</p>
           <p className="text-xs text-muted-foreground">Ringkasan piutang & operasional CV. Manunggal Karya</p>
         </div>
-        <ExportDialog />
       </div>
 
       {/* Piutang Stats */}
