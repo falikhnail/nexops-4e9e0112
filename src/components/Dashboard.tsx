@@ -5,7 +5,7 @@ import { getOperationalTransactions, getCashDrawerBalance } from '@/lib/operasio
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, AlertTriangle, CheckCircle, Clock, DollarSign, FileText, Wallet, ArrowDownCircle, ArrowUpCircle, Landmark } from 'lucide-react';
-import ExportDialog from '@/components/ExportDialog';
+
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
