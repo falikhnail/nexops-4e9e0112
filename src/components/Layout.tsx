@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays, Download } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import ConnectionStatus from '@/components/ConnectionStatus';
 import { useAuth } from '@/contexts/AuthContext';
