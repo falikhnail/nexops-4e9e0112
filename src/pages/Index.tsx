@@ -6,6 +6,7 @@ import PiutangManager from '@/components/PiutangManager';
 import StoreSummary from '@/components/StoreSummary';
 import OperasionalManager from '@/components/OperasionalManager';
 import LaporanBulanan from '@/components/LaporanBulanan';
+import ExportPage from '@/components/ExportPage';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -17,6 +18,7 @@ const Index = () => {
       {activeTab === 'piutang' && <PiutangManager />}
       {activeTab === 'operasional' && <OperasionalManager />}
       {activeTab === 'laporan' && <LaporanBulanan />}
+      {activeTab === 'export' && <ExportPage />}
       {activeTab === 'rekap' && <StoreSummary />}
     </Layout>
   );
