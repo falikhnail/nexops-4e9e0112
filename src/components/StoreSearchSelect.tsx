@@ -8,14 +8,17 @@ interface StoreSearchSelectProps {
   stores: Store[];
   value: string;
   onValueChange: (value: string) => void;
+  placeholder?: string;
+  showAllOption?: boolean;
+  allOptionLabel?: string;
 }
 
-export default function StoreSearchSelect({ stores, value, onValueChange }: StoreSearchSelectProps) {
+export default function StoreSearchSelect({ stores, value, onValueChange, placeholder = 'Pilih toko...', showAllOption = false, allOptionLabel = 'Semua Toko' }: StoreSearchSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selected = stores.find(s => s.id === value);
+  const selected = value === 'all' ? null : stores.find(s => s.id === value);
 
   const filtered = useMemo(() => {
     if (!search) return stores;
@@ -44,7 +47,9 @@ export default function StoreSearchSelect({ stores, value, onValueChange }: Stor
           !selected && "text-muted-foreground"
         )}
       >
-        <span className="truncate">{selected ? `${selected.name} - ${selected.ownerName}` : 'Pilih toko...'}</span>
+        <span className="truncate">
+          {showAllOption && value === 'all' ? allOptionLabel : selected ? `${selected.name} - ${selected.ownerName}` : placeholder}
+        </span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
 
@@ -63,6 +68,19 @@ export default function StoreSearchSelect({ stores, value, onValueChange }: Stor
             </div>
           </div>
           <div className="max-h-[200px] overflow-y-auto p-1">
+            {showAllOption && (
+              <button
+                type="button"
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                  value === 'all' && "bg-accent"
+                )}
+                onClick={() => { onValueChange('all'); setOpen(false); setSearch(''); }}
+              >
+                <Check className={cn("h-3.5 w-3.5 shrink-0", value === 'all' ? "opacity-100" : "opacity-0")} />
+                <span className="truncate">{allOptionLabel}</span>
+              </button>
+            )}
             {filtered.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">Toko tidak ditemukan</p>
             ) : (

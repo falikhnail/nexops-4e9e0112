@@ -185,15 +185,16 @@ export default function PiutangManager() {
               <SelectItem value="lunas">Lunas</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={filterStore} onValueChange={setFilterStore}>
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Semua Toko" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Toko</SelectItem>
-              {stores.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <div className="w-full sm:w-[220px]">
+            <StoreSearchSelect
+              stores={stores}
+              value={filterStore}
+              onValueChange={setFilterStore}
+              placeholder="Semua Toko"
+              showAllOption
+              allOptionLabel="Semua Toko"
+            />
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
