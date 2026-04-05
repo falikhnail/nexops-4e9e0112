@@ -7,6 +7,7 @@ import StoreSummary from '@/components/StoreSummary';
 import OperasionalManager from '@/components/OperasionalManager';
 import LaporanBulanan from '@/components/LaporanBulanan';
 import ExportPage from '@/components/ExportPage';
+import ActivityLog from '@/components/ActivityLog';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -20,6 +21,7 @@ const Index = () => {
       {activeTab === 'laporan' && <LaporanBulanan />}
       {activeTab === 'export' && <ExportPage />}
       {activeTab === 'rekap' && <StoreSummary />}
+      {activeTab === 'aktivitas' && <ActivityLog />}
     </Layout>
   );
 };

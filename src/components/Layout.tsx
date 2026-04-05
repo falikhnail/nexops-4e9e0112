@@ -20,6 +20,7 @@ const navItems = [
   { id: 'laporan', label: 'Laporan', icon: CalendarDays },
   { id: 'export', label: 'Export', icon: Download },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
+  { id: 'aktivitas', label: 'Aktivitas', icon: History },
 ];
 
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
