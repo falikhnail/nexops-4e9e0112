@@ -8,6 +8,9 @@ interface StoreSearchSelectProps {
   stores: Store[];
   value: string;
   onValueChange: (value: string) => void;
+  placeholder?: string;
+  showAllOption?: boolean;
+  allOptionLabel?: string;
 }
 
 export default function StoreSearchSelect({ stores, value, onValueChange }: StoreSearchSelectProps) {
