@@ -13,12 +13,12 @@ interface StoreSearchSelectProps {
   allOptionLabel?: string;
 }
 
-export default function StoreSearchSelect({ stores, value, onValueChange }: StoreSearchSelectProps) {
+export default function StoreSearchSelect({ stores, value, onValueChange, placeholder = 'Pilih toko...', showAllOption = false, allOptionLabel = 'Semua Toko' }: StoreSearchSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selected = stores.find(s => s.id === value);
+  const selected = value === 'all' ? null : stores.find(s => s.id === value);
 
   const filtered = useMemo(() => {
     if (!search) return stores;
