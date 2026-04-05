@@ -68,6 +68,19 @@ export default function StoreSearchSelect({ stores, value, onValueChange, placeh
             </div>
           </div>
           <div className="max-h-[200px] overflow-y-auto p-1">
+            {showAllOption && (
+              <button
+                type="button"
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                  value === 'all' && "bg-accent"
+                )}
+                onClick={() => { onValueChange('all'); setOpen(false); setSearch(''); }}
+              >
+                <Check className={cn("h-3.5 w-3.5 shrink-0", value === 'all' ? "opacity-100" : "opacity-0")} />
+                <span className="truncate">{allOptionLabel}</span>
+              </button>
+            )}
             {filtered.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">Toko tidak ditemukan</p>
             ) : (
