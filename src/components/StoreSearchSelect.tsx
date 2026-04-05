@@ -47,7 +47,9 @@ export default function StoreSearchSelect({ stores, value, onValueChange, placeh
           !selected && "text-muted-foreground"
         )}
       >
-        <span className="truncate">{selected ? `${selected.name} - ${selected.ownerName}` : 'Pilih toko...'}</span>
+        <span className="truncate">
+          {showAllOption && value === 'all' ? allOptionLabel : selected ? `${selected.name} - ${selected.ownerName}` : placeholder}
+        </span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
 
