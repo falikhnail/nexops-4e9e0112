@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format, parseISO, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
-import { Search, CalendarDays, History, ChevronLeft, ChevronRight, Plus, Pencil, Trash2, RefreshCw } from 'lucide-react';
+import { Search, CalendarDays, History, ChevronLeft, ChevronRight, Plus, Pencil, Trash2, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ActivityLog {
   id: string;
