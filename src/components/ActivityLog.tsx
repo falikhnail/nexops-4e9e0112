@@ -41,6 +41,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: typeof
 const PAGE_SIZE = 20;
 
 export default function ActivityLog() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
