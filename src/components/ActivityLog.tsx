@@ -268,30 +268,18 @@ export default function ActivityLog() {
                       {isExpanded && hasData && (
                         <TableRow>
                           <TableCell colSpan={5} className="bg-muted/30 p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {log.old_data && (
-                                <div>
-                                  <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-red-400" />
-                                    Data Sebelum
-                                  </p>
-                                  <pre className="text-xs bg-background border border-border rounded-md p-3 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-all">
-                                    {JSON.stringify(log.old_data, null, 2)}
-                                  </pre>
-                                </div>
-                              )}
-                              {log.new_data && (
-                                <div>
-                                  <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-                                    Data Sesudah
-                                  </p>
-                                  <pre className="text-xs bg-background border border-border rounded-md p-3 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-all">
-                                    {JSON.stringify(log.new_data, null, 2)}
-                                  </pre>
-                                </div>
-                              )}
-                            </div>
+                            {log.old_data && log.new_data ? (
+                              <DataDiff oldData={log.old_data} newData={log.new_data} />
+                            ) : (
+                              <div>
+                                <p className="text-xs font-semibold text-muted-foreground mb-1.5">
+                                  {log.old_data ? 'Data Dihapus' : 'Data Ditambahkan'}
+                                </p>
+                                <pre className="text-xs bg-background border border-border rounded-md p-3 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-all">
+                                  {JSON.stringify(log.old_data || log.new_data, null, 2)}
+                                </pre>
+                              </div>
+                            )}
                           </TableCell>
                         </TableRow>
                       )}
