@@ -236,22 +236,66 @@ export default function ActivityLog() {
                 {paginated.map(log => {
                   const actionCfg = ACTION_CONFIG[log.action] || ACTION_CONFIG.INSERT;
                   const ActionIcon = actionCfg.icon;
+                  const isExpanded = expandedId === log.id;
+                  const hasData = log.old_data || log.new_data;
                   return (
-                    <TableRow key={log.id}>
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                        {format(parseISO(log.created_at), 'dd MMM yyyy HH:mm', { locale: idLocale })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] gap-1 ${actionCfg.color}`}>
-                          <ActionIcon className="h-3 w-3" />
-                          {actionCfg.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-xs font-medium">{TABLE_LABELS[log.table_name] || log.table_name}</span>
-                      </TableCell>
-                      <TableCell className="text-sm">{log.description}</TableCell>
-                    </TableRow>
+                    <Fragment key={log.id}>
+                      <TableRow 
+                        className={hasData ? 'cursor-pointer hover:bg-muted/50' : ''}
+                        onClick={() => hasData && setExpandedId(isExpanded ? null : log.id)}
+                      >
+                        <TableCell className="px-2">
+                          {hasData && (
+                            isExpanded 
+                              ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> 
+                              : <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {format(parseISO(log.created_at), 'dd MMM yyyy HH:mm', { locale: idLocale })}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] gap-1 ${actionCfg.color}`}>
+                            <ActionIcon className="h-3 w-3" />
+                            {actionCfg.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-xs font-medium">{TABLE_LABELS[log.table_name] || log.table_name}</span>
+                        </TableCell>
+                        <TableCell className="text-sm">{log.description}</TableCell>
+                      </TableRow>
+                      {isExpanded && hasData && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="bg-muted/30 p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {log.old_data && (
+                                <div>
+                                  <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-red-400" />
+                                    Data Sebelum
+                                  </p>
+                                  <pre className="text-xs bg-background border border-border rounded-md p-3 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-all">
+                                    {JSON.stringify(log.old_data, null, 2)}
+                                  </pre>
+                                </div>
+                              )}
+                              {log.new_data && (
+                                <div>
+                                  <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                                    Data Sesudah
+                                  </p>
+                                  <pre className="text-xs bg-background border border-border rounded-md p-3 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-all">
+                                    {JSON.stringify(log.new_data, null, 2)}
+                                  </pre>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </Fragment>
                   );
                 })}
               </TableBody>
