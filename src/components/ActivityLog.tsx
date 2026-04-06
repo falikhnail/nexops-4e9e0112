@@ -225,6 +225,7 @@ export default function ActivityLog() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[40px]"></TableHead>
                   <TableHead className="w-[160px]">Waktu</TableHead>
                   <TableHead className="w-[100px]">Aksi</TableHead>
                   <TableHead className="w-[150px]">Modul</TableHead>
