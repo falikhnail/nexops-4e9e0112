@@ -62,7 +62,7 @@ export default function AttendanceManager() {
       ? supabase.from('attendance').select('*').eq('date', selectedDate)
       : supabase.from('attendance').select('*').gte('date', format(monthStart, 'yyyy-MM-dd')).lte('date', format(monthEnd, 'yyyy-MM-dd'));
     const { data } = await query;
-    setAttendance(data || []);
+    setAttendance((data || []) as AttendanceRecord[]);
     setLocalEdits({});
     setLoading(false);
   };
