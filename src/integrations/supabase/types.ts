@@ -47,6 +47,44 @@ export type Database = {
         }
         Relationships: []
       }
+      attendance: {
+        Row: {
+          created_at: string
+          date: string
+          employee_id: string
+          id: string
+          notes: string | null
+          overtime_hours: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          employee_id: string
+          id?: string
+          notes?: string | null
+          overtime_hours?: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          overtime_hours?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cash_drawer_deposits: {
         Row: {
           amount: number
@@ -68,6 +106,51 @@ export type Database = {
           date?: string
           id?: string
           notes?: string | null
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          attendance_bonus: number
+          created_at: string
+          daily_wage: number
+          id: string
+          join_date: string
+          meal_allowance: number
+          name: string
+          overtime_rate: number
+          phone: string | null
+          position: string
+          status: string
+          transport_allowance: number
+        }
+        Insert: {
+          attendance_bonus?: number
+          created_at?: string
+          daily_wage?: number
+          id?: string
+          join_date?: string
+          meal_allowance?: number
+          name: string
+          overtime_rate?: number
+          phone?: string | null
+          position?: string
+          status?: string
+          transport_allowance?: number
+        }
+        Update: {
+          attendance_bonus?: number
+          created_at?: string
+          daily_wage?: number
+          id?: string
+          join_date?: string
+          meal_allowance?: number
+          name?: string
+          overtime_rate?: number
+          phone?: string | null
+          position?: string
+          status?: string
+          transport_allowance?: number
         }
         Relationships: []
       }
@@ -173,6 +256,83 @@ export type Database = {
             columns: ["piutang_id"]
             isOneToOne: false
             referencedRelation: "piutangs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payroll: {
+        Row: {
+          absent_days: number
+          attendance_bonus: number
+          base_salary: number
+          created_at: string
+          deductions: number
+          employee_id: string
+          id: string
+          leave_days: number
+          meal_total: number
+          notes: string | null
+          overtime_total: number
+          paid_date: string | null
+          period_end: string
+          period_start: string
+          sick_days: number
+          status: string
+          total_overtime_hours: number
+          total_salary: number
+          transport_total: number
+          work_days: number
+        }
+        Insert: {
+          absent_days?: number
+          attendance_bonus?: number
+          base_salary?: number
+          created_at?: string
+          deductions?: number
+          employee_id: string
+          id?: string
+          leave_days?: number
+          meal_total?: number
+          notes?: string | null
+          overtime_total?: number
+          paid_date?: string | null
+          period_end: string
+          period_start: string
+          sick_days?: number
+          status?: string
+          total_overtime_hours?: number
+          total_salary?: number
+          transport_total?: number
+          work_days?: number
+        }
+        Update: {
+          absent_days?: number
+          attendance_bonus?: number
+          base_salary?: number
+          created_at?: string
+          deductions?: number
+          employee_id?: string
+          id?: string
+          leave_days?: number
+          meal_total?: number
+          notes?: string | null
+          overtime_total?: number
+          paid_date?: string | null
+          period_end?: string
+          period_start?: string
+          sick_days?: number
+          status?: string
+          total_overtime_hours?: number
+          total_salary?: number
+          transport_total?: number
+          work_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
