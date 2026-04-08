@@ -8,6 +8,9 @@ import OperasionalManager from '@/components/OperasionalManager';
 import LaporanBulanan from '@/components/LaporanBulanan';
 import ExportPage from '@/components/ExportPage';
 import ActivityLog from '@/components/ActivityLog';
+import EmployeeManager from '@/components/EmployeeManager';
+import AttendanceManager from '@/components/AttendanceManager';
+import PayrollManager from '@/components/PayrollManager';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -18,6 +21,9 @@ const Index = () => {
       {activeTab === 'stores' && <StoreManager />}
       {activeTab === 'piutang' && <PiutangManager />}
       {activeTab === 'operasional' && <OperasionalManager />}
+      {activeTab === 'karyawan' && <EmployeeManager />}
+      {activeTab === 'absensi' && <AttendanceManager />}
+      {activeTab === 'gaji' && <PayrollManager />}
       {activeTab === 'laporan' && <LaporanBulanan />}
       {activeTab === 'export' && <ExportPage />}
       {activeTab === 'rekap' && <StoreSummary />}

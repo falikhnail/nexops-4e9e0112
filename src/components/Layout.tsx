@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays, Download, History } from 'lucide-react';
+import { Store, BarChart3, FileText, LayoutDashboard, ClipboardList, Briefcase, LogOut, CalendarDays, Download, History, Users, CalendarCheck, Wallet } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import ConnectionStatus from '@/components/ConnectionStatus';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,9 @@ const navItems = [
   { id: 'operasional', label: 'Operasional', icon: Briefcase },
   { id: 'stores', label: 'Toko', icon: Store },
   { id: 'piutang', label: 'Piutang', icon: FileText },
+  { id: 'karyawan', label: 'Karyawan', icon: Users },
+  { id: 'absensi', label: 'Absensi', icon: CalendarCheck },
+  { id: 'gaji', label: 'Gaji', icon: Wallet },
   { id: 'laporan', label: 'Laporan', icon: CalendarDays },
   { id: 'export', label: 'Export', icon: Download },
   { id: 'rekap', label: 'Rekap', icon: ClipboardList },
