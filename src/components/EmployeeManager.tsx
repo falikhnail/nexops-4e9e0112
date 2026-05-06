@@ -16,6 +16,8 @@ interface Employee {
   name: string;
   position: string;
   daily_wage: number;
+  wage_sopir: number;
+  wage_kenek: number;
   meal_allowance: number;
   transport_allowance: number;
   attendance_bonus: number;
@@ -26,7 +28,7 @@ interface Employee {
 }
 
 const emptyForm: Omit<Employee, 'id'> = {
-  name: '', position: '', daily_wage: 0, meal_allowance: 0,
+  name: '', position: '', daily_wage: 0, wage_sopir: 0, wage_kenek: 0, meal_allowance: 0,
   transport_allowance: 0, attendance_bonus: 0, overtime_rate: 0,
   join_date: new Date().toISOString().split('T')[0], status: 'active', phone: '',
 };
