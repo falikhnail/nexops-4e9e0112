@@ -97,15 +97,31 @@ export default function OperasionalManager() {
 
   const totals = useMemo(() => {
     const todayStr = new Date().toISOString().slice(0, 10);
+    // Tanggal acuan: kalau user filter tanggal mulai, pakai itu; kalau tidak, pakai hari ini
+    const refDate = filterDateFrom || todayStr;
+
+    // Saldo Kemarin = sisa UANG DI LACI pada akhir hari sebelum refDate
+    // (basis kategori cash + dikurangi setoran ke bank, dari SEMUA transaksi, tidak ikut filter)
+    let cashInBefore = 0;
+    let cashOutBefore = 0;
+    transactions.forEach(t => {
+      if (t.category === 'cash' && t.date < refDate) {
+        if (t.type === 'pemasukan') cashInBefore += t.amount;
+        else cashOutBefore += t.amount;
+      }
+    });
+    const depositsBefore = deposits.filter(d => d.date < refDate).reduce((s, d) => s + d.amount, 0);
+    const saldoKemarin = Math.max(0, cashInBefore - cashOutBefore - depositsBefore);
+
+    // Hari ini = transaksi pada refDate (tidak terpengaruh filter type/kategori biar konsisten)
+    const pemasukanToday = transactions.filter(t => t.type === 'pemasukan' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
+    const pengeluaranToday = transactions.filter(t => t.type === 'pengeluaran' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
+
+    // Untuk daftar/laporan tetap pakai data terfilter
     const pengeluaran = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
-    const pemasukanToday = filtered.filter(t => t.type === 'pemasukan' && t.date === todayStr).reduce((s, t) => s + t.amount, 0);
-    const pengeluaranToday = filtered.filter(t => t.type === 'pengeluaran' && t.date === todayStr).reduce((s, t) => s + t.amount, 0);
-    const pemasukanBefore = filtered.filter(t => t.type === 'pemasukan' && t.date < todayStr).reduce((s, t) => s + t.amount, 0);
-    const pengeluaranBefore = filtered.filter(t => t.type === 'pengeluaran' && t.date < todayStr).reduce((s, t) => s + t.amount, 0);
-    const saldoKemarin = pemasukanBefore - pengeluaranBefore;
     const pemasukan = saldoKemarin + pemasukanToday;
     return { pemasukan, pengeluaran, saldo: pemasukan - pengeluaran, saldoKemarin, pemasukanToday, pengeluaranToday };
-  }, [filtered]);
+  }, [transactions, deposits, filtered, filterDateFrom]);
 
   const categoryBreakdown = useMemo(() => {
     const map = new Map<string, { name: string; type: string; total: number; count: number }>();
