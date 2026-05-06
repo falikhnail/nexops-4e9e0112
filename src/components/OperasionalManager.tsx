@@ -120,6 +120,37 @@ export default function OperasionalManager() {
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [filtered]);
 
+  // Riwayat saldo harian (audit per tanggal) - dari semua transaksi (tidak terfilter)
+  const dailyAudit = useMemo(() => {
+    const byDate = new Map<string, OperationalTransaction[]>();
+    transactions.forEach(t => {
+      const arr = byDate.get(t.date) || [];
+      arr.push(t);
+      byDate.set(t.date, arr);
+    });
+    const dates = Array.from(byDate.keys()).sort();
+    let running = 0;
+    const rows = dates.map(date => {
+      const txs = byDate.get(date)!;
+      const pemasukanHari = txs.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
+      const pengeluaranHari = txs.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
+      const saldoAwal = running;
+      const totalPemasukan = saldoAwal + pemasukanHari;
+      const saldoAkhir = totalPemasukan - pengeluaranHari;
+      running = saldoAkhir;
+      return { date, saldoAwal, pemasukanHari, pengeluaranHari, totalPemasukan, saldoAkhir, txs };
+    });
+    return rows.reverse(); // terbaru di atas
+  }, [transactions]);
+
+  const toggleAuditRow = (date: string) => {
+    setAuditExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(date)) next.delete(date); else next.add(date);
+      return next;
+    });
+  };
+
   const handleAdd = async () => {
     const amount = parseRupiahInput(newForm.amount);
     if (!amount || !newForm.date) {
