@@ -97,7 +97,14 @@ export default function PayrollManager() {
       // Jumlah hari yang ada lembur (dihitung sekali per hari, bukan per jam)
       const overtimeDays = empAttendance.filter(a => (a.overtime_hours || 0) > 0).length;
 
-      const baseSalary = hadir * emp.daily_wage;
+      // Gaji pokok: jumlahkan per hari berdasarkan peran (sopir/kenek). Fallback ke daily_wage bila tarif peran 0.
+      const baseSalary = hadirRecords.reduce((sum, a) => {
+        const role = (a as { role?: string }).role || 'sopir';
+        const rate = role === 'kenek'
+          ? (emp.wage_kenek || emp.daily_wage)
+          : (emp.wage_sopir || emp.daily_wage);
+        return sum + rate;
+      }, 0);
       const mealTotal = hadir * emp.meal_allowance;
       const transportTotal = weeksWorked * emp.transport_allowance;
       const overtimeTotal = overtimeDays * emp.overtime_rate;
