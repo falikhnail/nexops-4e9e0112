@@ -143,12 +143,17 @@ export default function EmployeeManager() {
               </div>
               <div><Label>No. Telepon</Label><Input value={form.phone} onChange={e => updateField('phone', e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Gaji Harian</Label><Input value={form.daily_wage === 0 ? '' : form.daily_wage.toLocaleString('id-ID')} onChange={e => updateNumField('daily_wage', e.target.value)} placeholder="0" /></div>
+                <div><Label>Gaji Harian (default)</Label><Input value={form.daily_wage === 0 ? '' : form.daily_wage.toLocaleString('id-ID')} onChange={e => updateNumField('daily_wage', e.target.value)} placeholder="0" /></div>
                 <div><Label>Uang Makan / hari</Label><Input value={form.meal_allowance === 0 ? '' : form.meal_allowance.toLocaleString('id-ID')} onChange={e => updateNumField('meal_allowance', e.target.value)} placeholder="0" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Uang Bensin / hari</Label><Input value={form.transport_allowance === 0 ? '' : form.transport_allowance.toLocaleString('id-ID')} onChange={e => updateNumField('transport_allowance', e.target.value)} placeholder="0" /></div>
-                <div><Label>Lembur / jam</Label><Input value={form.overtime_rate === 0 ? '' : form.overtime_rate.toLocaleString('id-ID')} onChange={e => updateNumField('overtime_rate', e.target.value)} placeholder="0" /></div>
+                <div><Label>Gaji sebagai Sopir / hari</Label><Input value={form.wage_sopir === 0 ? '' : form.wage_sopir.toLocaleString('id-ID')} onChange={e => updateNumField('wage_sopir', e.target.value)} placeholder="0" /></div>
+                <div><Label>Gaji sebagai Kenek / hari</Label><Input value={form.wage_kenek === 0 ? '' : form.wage_kenek.toLocaleString('id-ID')} onChange={e => updateNumField('wage_kenek', e.target.value)} placeholder="0" /></div>
+              </div>
+              <p className="text-xs text-muted-foreground -mt-2">Kosongkan Sopir/Kenek bila karyawan tidak punya peran ganda — sistem akan pakai Gaji Harian default.</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Uang Bensin / minggu</Label><Input value={form.transport_allowance === 0 ? '' : form.transport_allowance.toLocaleString('id-ID')} onChange={e => updateNumField('transport_allowance', e.target.value)} placeholder="0" /></div>
+                <div><Label>Lembur / hari</Label><Input value={form.overtime_rate === 0 ? '' : form.overtime_rate.toLocaleString('id-ID')} onChange={e => updateNumField('overtime_rate', e.target.value)} placeholder="0" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Bonus Absen (full)</Label><Input value={form.attendance_bonus === 0 ? '' : form.attendance_bonus.toLocaleString('id-ID')} onChange={e => updateNumField('attendance_bonus', e.target.value)} placeholder="0" /></div>
