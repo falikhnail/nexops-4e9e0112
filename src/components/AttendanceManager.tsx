@@ -27,6 +27,7 @@ interface AttendanceRecord {
   status: AttendanceStatus;
   overtime_hours: number;
   notes: string;
+  role?: string;
 }
 
 const STATUS_COLORS: Record<AttendanceStatus, string> = {
@@ -44,7 +45,7 @@ export default function AttendanceManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
-  const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string }>>({});
+  const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string; role: string }>>({});
   const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
 
   const monthStart = startOfMonth(currentDate);
@@ -81,6 +82,7 @@ export default function AttendanceManager() {
         status: prev[empId]?.status || getRecord(empId)?.status || 'hadir',
         overtime_hours: prev[empId]?.overtime_hours ?? getRecord(empId)?.overtime_hours ?? 0,
         notes: prev[empId]?.notes ?? getRecord(empId)?.notes ?? '',
+        role: prev[empId]?.role ?? getRecord(empId)?.role ?? 'sopir',
         [field]: value,
       }
     }));
@@ -93,7 +95,7 @@ export default function AttendanceManager() {
 
     for (const [empId, edit] of editsToSave) {
       const existing = getRecord(empId);
-      const payload = { employee_id: empId, date: selectedDate, status: edit.status, overtime_hours: edit.overtime_hours, notes: edit.notes };
+      const payload = { employee_id: empId, date: selectedDate, status: edit.status, overtime_hours: edit.overtime_hours, notes: edit.notes, role: edit.role };
       if (existing?.id) {
         await supabase.from('attendance').update(payload).eq('id', existing.id);
       } else {
@@ -170,21 +172,23 @@ export default function AttendanceManager() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">Karyawan</TableHead>
-                  <TableHead className="w-[130px]">Status</TableHead>
-                  <TableHead className="w-[100px]">Lembur (jam)</TableHead>
+                  <TableHead className="w-[180px]">Karyawan</TableHead>
+                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[110px]">Peran</TableHead>
+                  <TableHead className="w-[90px]">Lembur (jam)</TableHead>
                   <TableHead>Catatan</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
                 ) : filtered.map(emp => {
                   const rec = getRecord(emp.id);
                   const local = localEdits[emp.id];
                   const currentStatus = local?.status || rec?.status || '';
                   const currentOT = local?.overtime_hours ?? rec?.overtime_hours ?? 0;
                   const currentNotes = local?.notes ?? rec?.notes ?? '';
+                  const currentRole = local?.role ?? rec?.role ?? 'sopir';
                   const isEdited = !!local;
 
                   return (
@@ -203,6 +207,15 @@ export default function AttendanceManager() {
                             <SelectItem value="izin">📋 Izin</SelectItem>
                             <SelectItem value="sakit">🤒 Sakit</SelectItem>
                             <SelectItem value="alfa">❌ Alfa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir'}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sopir">🚛 Sopir</SelectItem>
+                            <SelectItem value="kenek">🧰 Kenek</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>

@@ -16,6 +16,7 @@ import * as XLSX from 'xlsx';
 
 interface Employee {
   id: string; name: string; position: string; daily_wage: number;
+  wage_sopir?: number; wage_kenek?: number;
   meal_allowance: number; transport_allowance: number; attendance_bonus: number; overtime_rate: number;
 }
 
@@ -49,7 +50,7 @@ export default function PayrollManager() {
   const fetchData = async () => {
     setLoading(true);
     const [empRes, payRes] = await Promise.all([
-      supabase.from('employees').select('id,name,position,daily_wage,meal_allowance,transport_allowance,attendance_bonus,overtime_rate').eq('status', 'active').order('name'),
+      supabase.from('employees').select('id,name,position,daily_wage,wage_sopir,wage_kenek,meal_allowance,transport_allowance,attendance_bonus,overtime_rate').eq('status', 'active').order('name'),
       supabase.from('payroll').select('*').order('created_at', { ascending: false }).limit(200),
     ]);
     setEmployees(empRes.data || []);
@@ -96,7 +97,14 @@ export default function PayrollManager() {
       // Jumlah hari yang ada lembur (dihitung sekali per hari, bukan per jam)
       const overtimeDays = empAttendance.filter(a => (a.overtime_hours || 0) > 0).length;
 
-      const baseSalary = hadir * emp.daily_wage;
+      // Gaji pokok: jumlahkan per hari berdasarkan peran (sopir/kenek). Fallback ke daily_wage bila tarif peran 0.
+      const baseSalary = hadirRecords.reduce((sum, a) => {
+        const role = (a as { role?: string }).role || 'sopir';
+        const rate = role === 'kenek'
+          ? (emp.wage_kenek || emp.daily_wage)
+          : (emp.wage_sopir || emp.daily_wage);
+        return sum + rate;
+      }, 0);
       const mealTotal = hadir * emp.meal_allowance;
       const transportTotal = weeksWorked * emp.transport_allowance;
       const overtimeTotal = overtimeDays * emp.overtime_rate;

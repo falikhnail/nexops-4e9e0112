@@ -55,6 +55,7 @@ export type Database = {
           id: string
           notes: string | null
           overtime_hours: number
+          role: string
           status: string
         }
         Insert: {
@@ -64,6 +65,7 @@ export type Database = {
           id?: string
           notes?: string | null
           overtime_hours?: number
+          role?: string
           status?: string
         }
         Update: {
@@ -73,6 +75,7 @@ export type Database = {
           id?: string
           notes?: string | null
           overtime_hours?: number
+          role?: string
           status?: string
         }
         Relationships: [
@@ -123,6 +126,8 @@ export type Database = {
           position: string
           status: string
           transport_allowance: number
+          wage_kenek: number
+          wage_sopir: number
         }
         Insert: {
           attendance_bonus?: number
@@ -137,6 +142,8 @@ export type Database = {
           position?: string
           status?: string
           transport_allowance?: number
+          wage_kenek?: number
+          wage_sopir?: number
         }
         Update: {
           attendance_bonus?: number
@@ -151,6 +158,8 @@ export type Database = {
           position?: string
           status?: string
           transport_allowance?: number
+          wage_kenek?: number
+          wage_sopir?: number
         }
         Relationships: []
       }
