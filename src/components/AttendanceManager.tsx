@@ -27,6 +27,7 @@ interface AttendanceRecord {
   status: AttendanceStatus;
   overtime_hours: number;
   notes: string;
+  role?: string;
 }
 
 const STATUS_COLORS: Record<AttendanceStatus, string> = {
