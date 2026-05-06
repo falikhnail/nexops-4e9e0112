@@ -248,7 +248,7 @@ export default function OperasionalManager() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
           {[
             { title: 'Saldo Kemarin', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive' },
             { title: 'Pemasukan Hari Ini', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success' },
@@ -267,15 +267,15 @@ export default function OperasionalManager() {
             const c = colorMap[s.color];
             return (
               <Card key={s.title} className={s.highlight ? 'border-warning/30 bg-warning/5' : 'border-border/60'}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{s.title}</p>
-                      <p className={`text-xl font-bold mt-1 ${c.text}`}>{formatCurrency(s.value)}</p>
-                      {s.sub && <p className="text-[11px] text-muted-foreground mt-0.5">{s.sub}</p>}
+                      <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground uppercase tracking-wide leading-tight">{s.title}</p>
+                      <p className={`text-base sm:text-lg font-bold mt-1 break-words leading-tight ${c.text}`}>{formatCurrency(s.value)}</p>
+                      {s.sub && <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{s.sub}</p>}
                     </div>
-                    <div className={`h-10 w-10 shrink-0 rounded-lg flex items-center justify-center ${c.bg}`}>
-                      <Icon className={`h-5 w-5 ${c.text}`} />
+                    <div className={`h-8 w-8 sm:h-9 sm:w-9 shrink-0 rounded-lg flex items-center justify-center ${c.bg}`}>
+                      <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] ${c.text}`} />
                     </div>
                   </div>
                 </CardContent>
