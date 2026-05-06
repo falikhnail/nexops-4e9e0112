@@ -181,13 +181,14 @@ export default function AttendanceManager() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
                 ) : filtered.map(emp => {
                   const rec = getRecord(emp.id);
                   const local = localEdits[emp.id];
                   const currentStatus = local?.status || rec?.status || '';
                   const currentOT = local?.overtime_hours ?? rec?.overtime_hours ?? 0;
                   const currentNotes = local?.notes ?? rec?.notes ?? '';
+                  const currentRole = local?.role ?? rec?.role ?? 'sopir';
                   const isEdited = !!local;
 
                   return (
@@ -206,6 +207,15 @@ export default function AttendanceManager() {
                             <SelectItem value="izin">📋 Izin</SelectItem>
                             <SelectItem value="sakit">🤒 Sakit</SelectItem>
                             <SelectItem value="alfa">❌ Alfa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir'}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sopir">🚛 Sopir</SelectItem>
+                            <SelectItem value="kenek">🧰 Kenek</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
