@@ -330,8 +330,8 @@ export default function PayrollManager() {
                 <div className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Rincian Gaji</div>
                 <div className="flex justify-between"><span>Gaji Pokok ({selectedPayroll.work_days} hari × {formatRupiah(selectedEmployee?.daily_wage || 0)})</span><span className="font-mono">{formatRupiah(selectedPayroll.base_salary)}</span></div>
                 <div className="flex justify-between"><span>Uang Makan ({selectedPayroll.work_days} hari)</span><span className="font-mono">{formatRupiah(selectedPayroll.meal_total)}</span></div>
-                <div className="flex justify-between"><span>Uang Bensin ({selectedPayroll.work_days} hari)</span><span className="font-mono">{formatRupiah(selectedPayroll.transport_total)}</span></div>
-                <div className="flex justify-between"><span>Uang Lembur ({selectedPayroll.total_overtime_hours} jam)</span><span className="font-mono">{formatRupiah(selectedPayroll.overtime_total)}</span></div>
+                <div className="flex justify-between"><span>Uang Bensin ({selectedEmployee?.transport_allowance ? Math.round(selectedPayroll.transport_total / selectedEmployee.transport_allowance) : 0} minggu)</span><span className="font-mono">{formatRupiah(selectedPayroll.transport_total)}</span></div>
+                <div className="flex justify-between"><span>Uang Lembur ({selectedEmployee?.overtime_rate ? Math.round(selectedPayroll.overtime_total / selectedEmployee.overtime_rate) : 0}× / {selectedPayroll.total_overtime_hours} jam)</span><span className="font-mono">{formatRupiah(selectedPayroll.overtime_total)}</span></div>
                 <div className="flex justify-between"><span>Bonus Absen</span><span className="font-mono">{formatRupiah(selectedPayroll.attendance_bonus)}</span></div>
                 {selectedPayroll.deductions > 0 && (
                   <div className="flex justify-between text-destructive"><span>Potongan</span><span className="font-mono">-{formatRupiah(selectedPayroll.deductions)}</span></div>
