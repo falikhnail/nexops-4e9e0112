@@ -82,6 +82,7 @@ export default function AttendanceManager() {
         status: prev[empId]?.status || getRecord(empId)?.status || 'hadir',
         overtime_hours: prev[empId]?.overtime_hours ?? getRecord(empId)?.overtime_hours ?? 0,
         notes: prev[empId]?.notes ?? getRecord(empId)?.notes ?? '',
+        role: prev[empId]?.role ?? getRecord(empId)?.role ?? 'sopir',
         [field]: value,
       }
     }));
