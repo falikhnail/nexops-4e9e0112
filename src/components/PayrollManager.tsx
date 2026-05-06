@@ -16,6 +16,7 @@ import * as XLSX from 'xlsx';
 
 interface Employee {
   id: string; name: string; position: string; daily_wage: number;
+  wage_sopir?: number; wage_kenek?: number;
   meal_allowance: number; transport_allowance: number; attendance_bonus: number; overtime_rate: number;
 }
 
