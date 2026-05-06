@@ -186,7 +186,7 @@ export default function EmployeeManager() {
                 <TableHead className="text-right">Gaji/hari</TableHead>
                 <TableHead className="text-right">Makan</TableHead>
                 <TableHead className="text-right">Bensin</TableHead>
-                <TableHead className="text-right">Lembur/jam</TableHead>
+                <TableHead className="text-right">Lembur/hari</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="w-[80px]"></TableHead>
               </TableRow>
