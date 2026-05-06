@@ -95,7 +95,7 @@ export default function AttendanceManager() {
 
     for (const [empId, edit] of editsToSave) {
       const existing = getRecord(empId);
-      const payload = { employee_id: empId, date: selectedDate, status: edit.status, overtime_hours: edit.overtime_hours, notes: edit.notes };
+      const payload = { employee_id: empId, date: selectedDate, status: edit.status, overtime_hours: edit.overtime_hours, notes: edit.notes, role: edit.role };
       if (existing?.id) {
         await supabase.from('attendance').update(payload).eq('id', existing.id);
       } else {
