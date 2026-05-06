@@ -248,7 +248,7 @@ export default function OperasionalManager() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
             { title: 'Saldo Kemarin', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive' },
             { title: 'Pemasukan Hari Ini', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success' },
