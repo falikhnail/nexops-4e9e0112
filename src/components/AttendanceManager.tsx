@@ -172,9 +172,10 @@ export default function AttendanceManager() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">Karyawan</TableHead>
-                  <TableHead className="w-[130px]">Status</TableHead>
-                  <TableHead className="w-[100px]">Lembur (jam)</TableHead>
+                  <TableHead className="w-[180px]">Karyawan</TableHead>
+                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[110px]">Peran</TableHead>
+                  <TableHead className="w-[90px]">Lembur (jam)</TableHead>
                   <TableHead>Catatan</TableHead>
                 </TableRow>
               </TableHeader>
