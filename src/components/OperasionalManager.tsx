@@ -313,6 +313,11 @@ export default function OperasionalManager() {
                   <Wallet className="h-5 w-5 text-primary" />
                 </div>
               </div>
+              <div className="mt-3">
+                <Button size="sm" variant="outline" className="text-xs w-full" onClick={() => setOpenAuditHistory(true)}>
+                  <History className="h-3 w-3 mr-1" /> Riwayat Saldo Harian
+                </Button>
+              </div>
             </CardContent>
           </Card>
           <Card className="border-warning/30 bg-warning/5">
