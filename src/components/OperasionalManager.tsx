@@ -215,7 +215,21 @@ export default function OperasionalManager() {
       return;
     }
     await depositCashDrawer({ amount, notes: depositForm.notes, date: depositForm.date });
-    toast({ title: 'Berhasil', description: `${formatCurrency(amount)} telah disetorkan ke bank` });
+    // Catat juga sebagai pengeluaran (transfer ke bank) agar tercatat di laporan pengeluaran
+    try {
+      await addOperationalTransaction({
+        type: 'pengeluaran',
+        category: 'transfer',
+        amount,
+        description: `Setor ke Bank${depositForm.notes ? ' - ' + depositForm.notes : ''}`,
+        date: depositForm.date,
+        categoryId: null,
+        receiptUrl: null,
+      });
+    } catch (e) {
+      console.error('Gagal mencatat pengeluaran setoran:', e);
+    }
+    toast({ title: 'Berhasil', description: `${formatCurrency(amount)} telah disetorkan ke bank & dicatat sebagai pengeluaran` });
     setDepositForm({ amount: '', notes: '', date: new Date().toISOString().slice(0, 10) });
     setOpenDeposit(false);
     refresh();
