@@ -37,6 +37,8 @@ export default function OperasionalManager() {
   const [openNew, setOpenNew] = useState(false);
   const [openDeposit, setOpenDeposit] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
+  const [openAuditHistory, setOpenAuditHistory] = useState(false);
+  const [auditExpanded, setAuditExpanded] = useState<Set<string>>(new Set());
   const [openReceipt, setOpenReceipt] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterDateFrom, setFilterDateFrom] = useState('');
