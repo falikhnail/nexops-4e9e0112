@@ -248,95 +248,53 @@ export default function OperasionalManager() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Saldo Kemarin</p>
-                  <p className={`text-2xl font-bold ${totals.saldoKemarin >= 0 ? 'text-primary' : 'text-destructive'}`}>{formatCurrency(totals.saldoKemarin)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Pemasukan Hari Ini</p>
-                  <p className="text-2xl font-bold text-success">{formatCurrency(totals.pemasukanToday)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
-                  <ArrowDownRight className="h-5 w-5 text-success" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Pemasukan</p>
-                  <p className="text-2xl font-bold text-success">{formatCurrency(totals.pemasukan)}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Saldo kemarin + hari ini</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-success" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Pengeluaran</p>
-                  <p className="text-2xl font-bold text-destructive">{formatCurrency(totals.pengeluaran)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
-                  <TrendingDown className="h-5 w-5 text-destructive" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Saldo Bersih</p>
-                  <p className={`text-2xl font-bold ${totals.saldo >= 0 ? 'text-primary' : 'text-destructive'}`}>{formatCurrency(totals.saldo)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Wallet className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <Button size="sm" variant="outline" className="text-xs w-full" onClick={() => setOpenAuditHistory(true)}>
-                  <History className="h-3 w-3 mr-1" /> Riwayat Saldo Harian
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-warning/30 bg-warning/5">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Uang di Laci</p>
-                  <p className="text-2xl font-bold text-warning">{formatCurrency(cashDrawerBalance)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center">
-                  <Landmark className="h-5 w-5 text-warning" />
-                </div>
-              </div>
-              <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="outline" className="text-xs" onClick={() => setOpenDeposit(true)}>Setor ke Bank</Button>
-                <Button size="sm" variant="ghost" className="text-xs" onClick={() => setOpenHistory(true)}>Riwayat</Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { title: 'Saldo Kemarin', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive' },
+            { title: 'Pemasukan Hari Ini', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success' },
+            { title: 'Total Pemasukan', value: totals.pemasukan, icon: TrendingUp, color: 'success', sub: 'Saldo kemarin + hari ini' },
+            { title: 'Total Pengeluaran', value: totals.pengeluaran, icon: TrendingDown, color: 'destructive' },
+            { title: 'Saldo Bersih', value: totals.saldo, icon: Wallet, color: totals.saldo >= 0 ? 'primary' : 'destructive' },
+            { title: 'Uang di Laci', value: cashDrawerBalance, icon: Landmark, color: 'warning', highlight: true },
+          ].map((s) => {
+            const Icon = s.icon;
+            const colorMap: Record<string, { text: string; bg: string }> = {
+              primary: { text: 'text-primary', bg: 'bg-primary/10' },
+              success: { text: 'text-success', bg: 'bg-success/10' },
+              destructive: { text: 'text-destructive', bg: 'bg-destructive/10' },
+              warning: { text: 'text-warning', bg: 'bg-warning/10' },
+            };
+            const c = colorMap[s.color];
+            return (
+              <Card key={s.title} className={s.highlight ? 'border-warning/30 bg-warning/5' : 'border-border/60'}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">{s.title}</p>
+                      <p className={`text-lg font-bold mt-1 truncate ${c.text}`}>{formatCurrency(s.value)}</p>
+                      {s.sub && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{s.sub}</p>}
+                    </div>
+                    <div className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center ${c.bg}`}>
+                      <Icon className={`h-4 w-4 ${c.text}`} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setOpenAuditHistory(true)}>
+            <History className="h-3.5 w-3.5 mr-1.5" /> Riwayat Saldo Harian
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setOpenDeposit(true)}>
+            <Landmark className="h-3.5 w-3.5 mr-1.5" /> Setor ke Bank
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setOpenHistory(true)}>
+            Riwayat Setoran
+          </Button>
         </div>
 
         {/* ===== TAB: TRANSAKSI ===== */}
