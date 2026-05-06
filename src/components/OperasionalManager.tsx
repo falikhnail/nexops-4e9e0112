@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, Landmark, ArrowUpRight, ArrowDownRight, Filter, Tag, Image, Upload, X, Settings } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, Landmark, ArrowUpRight, ArrowDownRight, Filter, Tag, Image, Upload, X, Settings, History, ChevronDown, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
@@ -37,6 +37,8 @@ export default function OperasionalManager() {
   const [openNew, setOpenNew] = useState(false);
   const [openDeposit, setOpenDeposit] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
+  const [openAuditHistory, setOpenAuditHistory] = useState(false);
+  const [auditExpanded, setAuditExpanded] = useState<Set<string>>(new Set());
   const [openReceipt, setOpenReceipt] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterDateFrom, setFilterDateFrom] = useState('');
@@ -117,6 +119,37 @@ export default function OperasionalManager() {
     });
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [filtered]);
+
+  // Riwayat saldo harian (audit per tanggal) - dari semua transaksi (tidak terfilter)
+  const dailyAudit = useMemo(() => {
+    const byDate = new Map<string, OperationalTransaction[]>();
+    transactions.forEach(t => {
+      const arr = byDate.get(t.date) || [];
+      arr.push(t);
+      byDate.set(t.date, arr);
+    });
+    const dates = Array.from(byDate.keys()).sort();
+    let running = 0;
+    const rows = dates.map(date => {
+      const txs = byDate.get(date)!;
+      const pemasukanHari = txs.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
+      const pengeluaranHari = txs.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
+      const saldoAwal = running;
+      const totalPemasukan = saldoAwal + pemasukanHari;
+      const saldoAkhir = totalPemasukan - pengeluaranHari;
+      running = saldoAkhir;
+      return { date, saldoAwal, pemasukanHari, pengeluaranHari, totalPemasukan, saldoAkhir, txs };
+    });
+    return rows.reverse(); // terbaru di atas
+  }, [transactions]);
+
+  const toggleAuditRow = (date: string) => {
+    setAuditExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(date)) next.delete(date); else next.add(date);
+      return next;
+    });
+  };
 
   const handleAdd = async () => {
     const amount = parseRupiahInput(newForm.amount);
@@ -279,6 +312,11 @@ export default function OperasionalManager() {
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <Wallet className="h-5 w-5 text-primary" />
                 </div>
+              </div>
+              <div className="mt-3">
+                <Button size="sm" variant="outline" className="text-xs w-full" onClick={() => setOpenAuditHistory(true)}>
+                  <History className="h-3 w-3 mr-1" /> Riwayat Saldo Harian
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -640,6 +678,71 @@ export default function OperasionalManager() {
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Bukti Transaksi</DialogTitle></DialogHeader>
           {openReceipt && <img src={openReceipt} alt="Bukti" className="w-full rounded-lg" />}
+        </DialogContent>
+      </Dialog>
+
+      {/* Riwayat Saldo Harian (Audit per tanggal) */}
+      <Dialog open={openAuditHistory} onOpenChange={setOpenAuditHistory}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><History className="h-4 w-4" /> Riwayat Saldo Harian</DialogTitle>
+            <p className="text-xs text-muted-foreground">Audit per tanggal: saldo kemarin, pemasukan, pengeluaran, dan saldo bersih akhir hari. Klik baris untuk melihat detail transaksi.</p>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto -mx-6 px-6">
+            {dailyAudit.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Belum ada data transaksi</p>
+            ) : (
+              <div className="space-y-2">
+                <div className="grid grid-cols-12 gap-2 px-3 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border sticky top-0 bg-background z-10">
+                  <div className="col-span-3">Tanggal</div>
+                  <div className="col-span-2 text-right">Saldo Kemarin</div>
+                  <div className="col-span-2 text-right">Pemasukan</div>
+                  <div className="col-span-2 text-right">Pengeluaran</div>
+                  <div className="col-span-3 text-right">Saldo Bersih</div>
+                </div>
+                {dailyAudit.map(row => {
+                  const expanded = auditExpanded.has(row.date);
+                  return (
+                    <div key={row.date} className="border border-border rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => toggleAuditRow(row.date)}
+                        className="w-full grid grid-cols-12 gap-2 px-3 py-3 text-sm hover:bg-muted/50 transition-colors items-center"
+                      >
+                        <div className="col-span-3 flex items-center gap-2 text-left">
+                          {expanded ? <ChevronDown className="h-3.5 w-3.5 shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
+                          <span className="font-medium">{format(new Date(row.date), 'EEE, dd MMM yyyy', { locale: idLocale })}</span>
+                        </div>
+                        <div className="col-span-2 text-right text-muted-foreground">{formatCurrency(row.saldoAwal)}</div>
+                        <div className="col-span-2 text-right text-success font-medium">+{formatCurrency(row.pemasukanHari)}</div>
+                        <div className="col-span-2 text-right text-destructive font-medium">-{formatCurrency(row.pengeluaranHari)}</div>
+                        <div className={`col-span-3 text-right font-bold ${row.saldoAkhir >= 0 ? 'text-primary' : 'text-destructive'}`}>{formatCurrency(row.saldoAkhir)}</div>
+                      </button>
+                      {expanded && (
+                        <div className="bg-muted/30 border-t border-border px-3 py-3 space-y-2">
+                          <div className="text-xs text-muted-foreground mb-2">
+                            Total Pemasukan (saldo kemarin + hari ini): <span className="font-semibold text-foreground">{formatCurrency(row.totalPemasukan)}</span>
+                          </div>
+                          {row.txs.map(t => (
+                            <div key={t.id} className="flex items-center gap-3 text-xs bg-background rounded px-2.5 py-2">
+                              <Badge variant={t.type === 'pemasukan' ? 'default' : 'destructive'} className="text-[10px] shrink-0">
+                                {t.type === 'pemasukan' ? 'Masuk' : 'Keluar'}
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px] shrink-0">{t.category === 'cash' ? 'Cash' : 'Transfer'}</Badge>
+                              {t.categoryName && <Badge variant="outline" className="text-[10px] shrink-0 gap-1"><Tag className="h-2 w-2" />{t.categoryName}</Badge>}
+                              <span className="flex-1 truncate text-muted-foreground">{t.description || '-'}</span>
+                              <span className={`font-semibold shrink-0 ${t.type === 'pemasukan' ? 'text-success' : 'text-destructive'}`}>
+                                {t.type === 'pemasukan' ? '+' : '-'}{formatCurrency(t.amount)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
