@@ -268,14 +268,14 @@ export default function OperasionalManager() {
             return (
               <Card key={s.title} className={s.highlight ? 'border-warning/30 bg-warning/5' : 'border-border/60'}>
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">{s.title}</p>
-                      <p className={`text-lg font-bold mt-1 truncate ${c.text}`}>{formatCurrency(s.value)}</p>
-                      {s.sub && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{s.sub}</p>}
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{s.title}</p>
+                      <p className={`text-xl font-bold mt-1 ${c.text}`}>{formatCurrency(s.value)}</p>
+                      {s.sub && <p className="text-[11px] text-muted-foreground mt-0.5">{s.sub}</p>}
                     </div>
-                    <div className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center ${c.bg}`}>
-                      <Icon className={`h-4 w-4 ${c.text}`} />
+                    <div className={`h-10 w-10 shrink-0 rounded-lg flex items-center justify-center ${c.bg}`}>
+                      <Icon className={`h-5 w-5 ${c.text}`} />
                     </div>
                   </div>
                 </CardContent>
