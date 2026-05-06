@@ -50,7 +50,7 @@ export default function PayrollManager() {
   const fetchData = async () => {
     setLoading(true);
     const [empRes, payRes] = await Promise.all([
-      supabase.from('employees').select('id,name,position,daily_wage,meal_allowance,transport_allowance,attendance_bonus,overtime_rate').eq('status', 'active').order('name'),
+      supabase.from('employees').select('id,name,position,daily_wage,wage_sopir,wage_kenek,meal_allowance,transport_allowance,attendance_bonus,overtime_rate').eq('status', 'active').order('name'),
       supabase.from('payroll').select('*').order('created_at', { ascending: false }).limit(200),
     ]);
     setEmployees(empRes.data || []);
