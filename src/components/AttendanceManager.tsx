@@ -45,7 +45,7 @@ export default function AttendanceManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
-  const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string }>>({});
+  const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string; role: string }>>({});
   const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
 
   const monthStart = startOfMonth(currentDate);
