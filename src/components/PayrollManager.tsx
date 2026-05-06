@@ -78,16 +78,28 @@ export default function PayrollManager() {
       if (exists) continue;
 
       const empAttendance = records.filter(a => a.employee_id === emp.id);
-      const hadir = empAttendance.filter(a => a.status === 'hadir').length;
+      const hadirRecords = empAttendance.filter(a => a.status === 'hadir');
+      const hadir = hadirRecords.length;
       const sakit = empAttendance.filter(a => a.status === 'sakit').length;
       const izin = empAttendance.filter(a => a.status === 'izin').length;
       const alfa = empAttendance.filter(a => a.status === 'alfa').length;
       const totalOT = empAttendance.reduce((sum, a) => sum + (a.overtime_hours || 0), 0);
 
+      // Hitung jumlah minggu kerja unik (berdasarkan tahun-minggu dari tanggal hadir)
+      const getWeekKey = (d: string) => {
+        const dt = new Date(d);
+        const onejan = new Date(dt.getFullYear(), 0, 1);
+        const week = Math.ceil((((dt.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+        return `${dt.getFullYear()}-${week}`;
+      };
+      const weeksWorked = new Set(hadirRecords.map(a => getWeekKey(a.date))).size;
+      // Jumlah hari yang ada lembur (dihitung sekali per hari, bukan per jam)
+      const overtimeDays = empAttendance.filter(a => (a.overtime_hours || 0) > 0).length;
+
       const baseSalary = hadir * emp.daily_wage;
       const mealTotal = hadir * emp.meal_allowance;
-      const transportTotal = hadir * emp.transport_allowance;
-      const overtimeTotal = totalOT * emp.overtime_rate;
+      const transportTotal = weeksWorked * emp.transport_allowance;
+      const overtimeTotal = overtimeDays * emp.overtime_rate;
       // Bonus absen: full jika tidak ada alfa dan tidak ada izin
       const bonusAbsen = (alfa === 0 && izin === 0) ? emp.attendance_bonus : 0;
       const totalSalary = baseSalary + mealTotal + transportTotal + overtimeTotal + bonusAbsen;
@@ -318,8 +330,8 @@ export default function PayrollManager() {
                 <div className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Rincian Gaji</div>
                 <div className="flex justify-between"><span>Gaji Pokok ({selectedPayroll.work_days} hari × {formatRupiah(selectedEmployee?.daily_wage || 0)})</span><span className="font-mono">{formatRupiah(selectedPayroll.base_salary)}</span></div>
                 <div className="flex justify-between"><span>Uang Makan ({selectedPayroll.work_days} hari)</span><span className="font-mono">{formatRupiah(selectedPayroll.meal_total)}</span></div>
-                <div className="flex justify-between"><span>Uang Bensin ({selectedPayroll.work_days} hari)</span><span className="font-mono">{formatRupiah(selectedPayroll.transport_total)}</span></div>
-                <div className="flex justify-between"><span>Uang Lembur ({selectedPayroll.total_overtime_hours} jam)</span><span className="font-mono">{formatRupiah(selectedPayroll.overtime_total)}</span></div>
+                <div className="flex justify-between"><span>Uang Bensin ({selectedEmployee?.transport_allowance ? Math.round(selectedPayroll.transport_total / selectedEmployee.transport_allowance) : 0} minggu)</span><span className="font-mono">{formatRupiah(selectedPayroll.transport_total)}</span></div>
+                <div className="flex justify-between"><span>Uang Lembur ({selectedEmployee?.overtime_rate ? Math.round(selectedPayroll.overtime_total / selectedEmployee.overtime_rate) : 0}× / {selectedPayroll.total_overtime_hours} jam)</span><span className="font-mono">{formatRupiah(selectedPayroll.overtime_total)}</span></div>
                 <div className="flex justify-between"><span>Bonus Absen</span><span className="font-mono">{formatRupiah(selectedPayroll.attendance_bonus)}</span></div>
                 {selectedPayroll.deductions > 0 && (
                   <div className="flex justify-between text-destructive"><span>Potongan</span><span className="font-mono">-{formatRupiah(selectedPayroll.deductions)}</span></div>
