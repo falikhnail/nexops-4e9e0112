@@ -215,13 +215,40 @@ export default function OperasionalManager() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Saldo Kemarin</p>
+                  <p className={`text-2xl font-bold ${totals.saldoKemarin >= 0 ? 'text-primary' : 'text-destructive'}`}>{formatCurrency(totals.saldoKemarin)}</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Wallet className="h-5 w-5 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Pemasukan Hari Ini</p>
+                  <p className="text-2xl font-bold text-success">{formatCurrency(totals.pemasukanToday)}</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
+                  <ArrowDownRight className="h-5 w-5 text-success" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Pemasukan</p>
                   <p className="text-2xl font-bold text-success">{formatCurrency(totals.pemasukan)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Saldo kemarin + hari ini</p>
                 </div>
                 <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
                   <TrendingUp className="h-5 w-5 text-success" />
