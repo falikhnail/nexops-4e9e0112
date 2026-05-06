@@ -94,9 +94,15 @@ export default function OperasionalManager() {
   }, [transactions, filterType, filterCategoryId, filterDateFrom, filterDateTo]);
 
   const totals = useMemo(() => {
-    const pemasukan = filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
+    const todayStr = new Date().toISOString().slice(0, 10);
     const pengeluaran = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
-    return { pemasukan, pengeluaran, saldo: pemasukan - pengeluaran };
+    const pemasukanToday = filtered.filter(t => t.type === 'pemasukan' && t.date === todayStr).reduce((s, t) => s + t.amount, 0);
+    const pengeluaranToday = filtered.filter(t => t.type === 'pengeluaran' && t.date === todayStr).reduce((s, t) => s + t.amount, 0);
+    const pemasukanBefore = filtered.filter(t => t.type === 'pemasukan' && t.date < todayStr).reduce((s, t) => s + t.amount, 0);
+    const pengeluaranBefore = filtered.filter(t => t.type === 'pengeluaran' && t.date < todayStr).reduce((s, t) => s + t.amount, 0);
+    const saldoKemarin = pemasukanBefore - pengeluaranBefore;
+    const pemasukan = saldoKemarin + pemasukanToday;
+    return { pemasukan, pengeluaran, saldo: pemasukan - pengeluaran, saldoKemarin, pemasukanToday, pengeluaranToday };
   }, [filtered]);
 
   const categoryBreakdown = useMemo(() => {
