@@ -78,7 +78,7 @@ export default function EmployeeManager() {
 
   const openEdit = (emp: Employee) => {
     setEditingId(emp.id);
-    setForm({ name: emp.name, position: emp.position, daily_wage: emp.daily_wage, meal_allowance: emp.meal_allowance, transport_allowance: emp.transport_allowance, attendance_bonus: emp.attendance_bonus, overtime_rate: emp.overtime_rate, join_date: emp.join_date, status: emp.status, phone: emp.phone });
+    setForm({ name: emp.name, position: emp.position, daily_wage: emp.daily_wage, wage_sopir: emp.wage_sopir || 0, wage_kenek: emp.wage_kenek || 0, meal_allowance: emp.meal_allowance, transport_allowance: emp.transport_allowance, attendance_bonus: emp.attendance_bonus, overtime_rate: emp.overtime_rate, join_date: emp.join_date, status: emp.status, phone: emp.phone });
     setDialogOpen(true);
   };
 
