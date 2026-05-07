@@ -325,6 +325,14 @@ export default function OperasionalManager() {
           <Button size="sm" variant="ghost" onClick={() => setOpenHistory(true)}>
             Riwayat Setoran
           </Button>
+          <div className="flex items-center gap-1.5 text-xs ml-1">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-success/10 text-success font-medium">
+              <ArrowDownRight className="h-3 w-3" /> Masuk: {filtered.filter(t => t.type === 'pemasukan').length}x
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-destructive/10 text-destructive font-medium">
+              <ArrowUpRight className="h-3 w-3" /> Keluar: {filtered.filter(t => t.type === 'pengeluaran').length}x
+            </span>
+          </div>
         </div>
 
         {/* ===== TAB: TRANSAKSI ===== */}
