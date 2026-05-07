@@ -33,7 +33,7 @@ export async function getOperationalTransactions(): Promise<OperationalTransacti
   const { data, error } = await supabase
     .from('operational_transactions')
     .select('*, operational_categories(name)')
-    .order('date', { ascending: false });
+    .order('created_at', { ascending: false });
   if (error) throw error;
   return (data || []).map(r => ({
     id: r.id,
