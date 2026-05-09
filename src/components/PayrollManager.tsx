@@ -72,6 +72,7 @@ export default function PayrollManager() {
 
     const records = attendanceData || [];
     let created = 0;
+    let skipped = 0;
 
     for (const emp of employees) {
       // Check if payroll already exists for this period
@@ -81,20 +82,18 @@ export default function PayrollManager() {
       const empAttendance = records.filter(a => a.employee_id === emp.id);
       const hadirRecords = empAttendance.filter(a => a.status === 'hadir');
       const hadir = hadirRecords.length;
+
+      // Aturan: minimal 6x hadir baru bisa generate gaji
+      if (hadir < 6) { skipped++; continue; }
+
       const sakit = empAttendance.filter(a => a.status === 'sakit').length;
       const izin = empAttendance.filter(a => a.status === 'izin').length;
       const alfa = empAttendance.filter(a => a.status === 'alfa').length;
       const totalOT = empAttendance.reduce((sum, a) => sum + (a.overtime_hours || 0), 0);
 
-      // Hitung jumlah minggu kerja unik (berdasarkan tahun-minggu dari tanggal hadir)
-      const getWeekKey = (d: string) => {
-        const dt = new Date(d);
-        const onejan = new Date(dt.getFullYear(), 0, 1);
-        const week = Math.ceil((((dt.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-        return `${dt.getFullYear()}-${week}`;
-      };
-      const weeksWorked = new Set(hadirRecords.map(a => getWeekKey(a.date))).size;
-      // Jumlah hari yang ada lembur (dihitung sekali per hari, bukan per jam)
+      // Bensin & bonus full cair per 6x hadir (1 siklus = 6 hari kerja)
+      const cycles = Math.floor(hadir / 6);
+      // Hari yang ada lembur (centang)
       const overtimeDays = empAttendance.filter(a => (a.overtime_hours || 0) > 0).length;
 
       // Gaji pokok: jumlahkan per hari berdasarkan peran (sopir/kenek). Fallback ke daily_wage bila tarif peran 0.
@@ -106,10 +105,10 @@ export default function PayrollManager() {
         return sum + rate;
       }, 0);
       const mealTotal = hadir * emp.meal_allowance;
-      const transportTotal = weeksWorked * emp.transport_allowance;
+      const transportTotal = cycles * emp.transport_allowance;
       const overtimeTotal = overtimeDays * emp.overtime_rate;
-      // Bonus absen: full jika tidak ada alfa dan tidak ada izin
-      const bonusAbsen = (alfa === 0 && izin === 0) ? emp.attendance_bonus : 0;
+      // Bonus full: cair per siklus 6 hari hadir
+      const bonusAbsen = cycles * emp.attendance_bonus;
       const totalSalary = baseSalary + mealTotal + transportTotal + overtimeTotal + bonusAbsen;
 
       const { error } = await supabase.from('payroll').insert({
@@ -133,7 +132,13 @@ export default function PayrollManager() {
       if (!error) created++;
     }
 
-    toast.success(`${created} slip gaji berhasil digenerate`);
+    if (created === 0 && skipped > 0) {
+      toast.error(`Tidak ada slip dibuat — ${skipped} karyawan belum mencapai 6x absen`);
+    } else if (skipped > 0) {
+      toast.success(`${created} slip digenerate, ${skipped} karyawan dilewati (<6x absen)`);
+    } else {
+      toast.success(`${created} slip gaji berhasil digenerate`);
+    }
     fetchData();
     setGenerating(false);
   };
