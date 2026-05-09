@@ -12,7 +12,7 @@ import { CalendarDays, Save, ChevronLeft, ChevronRight, Search } from 'lucide-re
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWeekend } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 
-type AttendanceStatus = 'hadir' | 'izin' | 'sakit' | 'alfa';
+type AttendanceStatus = 'hadir' | 'setengah' | 'izin' | 'sakit' | 'alfa';
 
 interface Employee {
   id: string;
@@ -33,6 +33,7 @@ interface AttendanceRecord {
 
 const STATUS_COLORS: Record<AttendanceStatus, string> = {
   hadir: 'bg-emerald-500/10 text-emerald-600 border-emerald-200',
+  setengah: 'bg-teal-500/10 text-teal-600 border-teal-200',
   izin: 'bg-blue-500/10 text-blue-600 border-blue-200',
   sakit: 'bg-amber-500/10 text-amber-600 border-amber-200',
   alfa: 'bg-red-500/10 text-red-600 border-red-200',
@@ -112,8 +113,8 @@ export default function AttendanceManager() {
 
   // Monthly summary
   const monthlySummary = useMemo(() => {
-    const summary: Record<string, { hadir: number; izin: number; sakit: number; alfa: number; lembur: number }> = {};
-    employees.forEach(e => { summary[e.id] = { hadir: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 }; });
+    const summary: Record<string, { hadir: number; setengah: number; izin: number; sakit: number; alfa: number; lembur: number }> = {};
+    employees.forEach(e => { summary[e.id] = { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 }; });
     attendance.forEach(a => {
       if (summary[a.employee_id]) {
         summary[a.employee_id][a.status as AttendanceStatus]++;
@@ -125,7 +126,7 @@ export default function AttendanceManager() {
 
   // Daily summary stats
   const dailyStats = useMemo(() => {
-    const stats = { hadir: 0, izin: 0, sakit: 0, alfa: 0, belum: 0 };
+    const stats = { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, belum: 0 };
     filtered.forEach(e => {
       const rec = localEdits[e.id] || getRecord(e.id);
       if (!rec) stats.belum++;
@@ -152,6 +153,7 @@ export default function AttendanceManager() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600">Hadir: {dailyStats.hadir}</Badge>
+              <Badge variant="outline" className="bg-teal-500/10 text-teal-600">½ Hari: {dailyStats.setengah}</Badge>
               <Badge variant="outline" className="bg-blue-500/10 text-blue-600">Izin: {dailyStats.izin}</Badge>
               <Badge variant="outline" className="bg-amber-500/10 text-amber-600">Sakit: {dailyStats.sakit}</Badge>
               <Badge variant="outline" className="bg-red-500/10 text-red-600">Alfa: {dailyStats.alfa}</Badge>
@@ -205,6 +207,7 @@ export default function AttendanceManager() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="hadir">✅ Hadir</SelectItem>
+                            <SelectItem value="setengah">🌓 Setengah Hari</SelectItem>
                             <SelectItem value="izin">📋 Izin</SelectItem>
                             <SelectItem value="sakit">🤒 Sakit</SelectItem>
                             <SelectItem value="alfa">❌ Alfa</SelectItem>
@@ -212,7 +215,7 @@ export default function AttendanceManager() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir'}>
+                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir' && currentStatus !== 'setengah'}>
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="sopir">🚛 Sopir</SelectItem>
@@ -252,6 +255,7 @@ export default function AttendanceManager() {
                 <TableRow>
                   <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Karyawan</TableHead>
                   <TableHead className="text-center">Hadir</TableHead>
+                  <TableHead className="text-center">½ Hari</TableHead>
                   <TableHead className="text-center">Izin</TableHead>
                   <TableHead className="text-center">Sakit</TableHead>
                   <TableHead className="text-center">Alfa</TableHead>
@@ -260,13 +264,14 @@ export default function AttendanceManager() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
                 ) : filtered.map(emp => {
-                  const s = monthlySummary[emp.id] || { hadir: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 };
+                  const s = monthlySummary[emp.id] || { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 };
                   return (
                     <TableRow key={emp.id}>
                       <TableCell className="sticky left-0 bg-card z-10 font-medium text-sm">{emp.name}</TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600">{s.hadir}</Badge></TableCell>
+                      <TableCell className="text-center"><Badge variant="outline" className="bg-teal-500/10 text-teal-600">{s.setengah}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-blue-500/10 text-blue-600">{s.izin}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-amber-500/10 text-amber-600">{s.sakit}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-red-500/10 text-red-600">{s.alfa}</Badge></TableCell>
