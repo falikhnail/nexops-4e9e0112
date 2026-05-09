@@ -153,6 +153,7 @@ export default function AttendanceManager() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600">Hadir: {dailyStats.hadir}</Badge>
+              <Badge variant="outline" className="bg-teal-500/10 text-teal-600">½ Hari: {dailyStats.setengah}</Badge>
               <Badge variant="outline" className="bg-blue-500/10 text-blue-600">Izin: {dailyStats.izin}</Badge>
               <Badge variant="outline" className="bg-amber-500/10 text-amber-600">Sakit: {dailyStats.sakit}</Badge>
               <Badge variant="outline" className="bg-red-500/10 text-red-600">Alfa: {dailyStats.alfa}</Badge>
