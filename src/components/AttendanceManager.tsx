@@ -255,6 +255,7 @@ export default function AttendanceManager() {
                 <TableRow>
                   <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Karyawan</TableHead>
                   <TableHead className="text-center">Hadir</TableHead>
+                  <TableHead className="text-center">½ Hari</TableHead>
                   <TableHead className="text-center">Izin</TableHead>
                   <TableHead className="text-center">Sakit</TableHead>
                   <TableHead className="text-center">Alfa</TableHead>
@@ -263,13 +264,14 @@ export default function AttendanceManager() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
                 ) : filtered.map(emp => {
-                  const s = monthlySummary[emp.id] || { hadir: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 };
+                  const s = monthlySummary[emp.id] || { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 };
                   return (
                     <TableRow key={emp.id}>
                       <TableCell className="sticky left-0 bg-card z-10 font-medium text-sm">{emp.name}</TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600">{s.hadir}</Badge></TableCell>
+                      <TableCell className="text-center"><Badge variant="outline" className="bg-teal-500/10 text-teal-600">{s.setengah}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-blue-500/10 text-blue-600">{s.izin}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-amber-500/10 text-amber-600">{s.sakit}</Badge></TableCell>
                       <TableCell className="text-center"><Badge variant="outline" className="bg-red-500/10 text-red-600">{s.alfa}</Badge></TableCell>
