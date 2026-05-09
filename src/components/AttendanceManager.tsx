@@ -176,7 +176,7 @@ export default function AttendanceManager() {
                   <TableHead className="w-[180px]">Karyawan</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
                   <TableHead className="w-[110px]">Peran</TableHead>
-                  <TableHead className="w-[90px]">Lembur (jam)</TableHead>
+                  <TableHead className="w-[80px] text-center">Lembur</TableHead>
                   <TableHead>Catatan</TableHead>
                 </TableRow>
               </TableHeader>
