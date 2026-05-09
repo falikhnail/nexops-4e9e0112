@@ -113,8 +113,8 @@ export default function AttendanceManager() {
 
   // Monthly summary
   const monthlySummary = useMemo(() => {
-    const summary: Record<string, { hadir: number; izin: number; sakit: number; alfa: number; lembur: number }> = {};
-    employees.forEach(e => { summary[e.id] = { hadir: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 }; });
+    const summary: Record<string, { hadir: number; setengah: number; izin: number; sakit: number; alfa: number; lembur: number }> = {};
+    employees.forEach(e => { summary[e.id] = { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, lembur: 0 }; });
     attendance.forEach(a => {
       if (summary[a.employee_id]) {
         summary[a.employee_id][a.status as AttendanceStatus]++;
@@ -126,7 +126,7 @@ export default function AttendanceManager() {
 
   // Daily summary stats
   const dailyStats = useMemo(() => {
-    const stats = { hadir: 0, izin: 0, sakit: 0, alfa: 0, belum: 0 };
+    const stats = { hadir: 0, setengah: 0, izin: 0, sakit: 0, alfa: 0, belum: 0 };
     filtered.forEach(e => {
       const rec = localEdits[e.id] || getRecord(e.id);
       if (!rec) stats.belum++;
