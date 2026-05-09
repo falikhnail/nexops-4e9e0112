@@ -81,33 +81,37 @@ export default function PayrollManager() {
 
       const empAttendance = records.filter(a => a.employee_id === emp.id);
       const hadirRecords = empAttendance.filter(a => a.status === 'hadir');
+      const setengahRecords = empAttendance.filter(a => a.status === 'setengah');
       const hadir = hadirRecords.length;
+      const setengah = setengahRecords.length;
+      // Hari kerja efektif (½ hari = 0.5)
+      const effectiveDays = hadir + setengah * 0.5;
 
-      // Aturan: minimal 6x hadir baru bisa generate gaji
-      if (hadir < 6) { skipped++; continue; }
+      // Aturan: minimal setara 6x hari kerja baru bisa generate gaji
+      if (effectiveDays < 6) { skipped++; continue; }
 
       const sakit = empAttendance.filter(a => a.status === 'sakit').length;
       const izin = empAttendance.filter(a => a.status === 'izin').length;
       const alfa = empAttendance.filter(a => a.status === 'alfa').length;
       const totalOT = empAttendance.reduce((sum, a) => sum + (a.overtime_hours || 0), 0);
 
-      // Bensin & bonus full cair per 6x hadir (1 siklus = 6 hari kerja)
-      const cycles = Math.floor(hadir / 6);
-      // Hari yang ada lembur (centang)
+      // Bensin & bonus full cair per 6 hari kerja efektif
+      const cycles = Math.floor(effectiveDays / 6);
+      // Hari yang ada lembur (centang) — setengah hari tidak boleh lembur, jadi otomatis 0
       const overtimeDays = empAttendance.filter(a => (a.overtime_hours || 0) > 0).length;
 
-      // Gaji pokok: jumlahkan per hari berdasarkan peran (sopir/kenek). Fallback ke daily_wage bila tarif peran 0.
-      const baseSalary = hadirRecords.reduce((sum, a) => {
-        const role = (a as { role?: string }).role || 'sopir';
-        const rate = role === 'kenek'
-          ? (emp.wage_kenek || emp.daily_wage)
-          : (emp.wage_sopir || emp.daily_wage);
-        return sum + rate;
-      }, 0);
-      const mealTotal = hadir * emp.meal_allowance;
+      // Gaji pokok: hadir penuh + setengah hari (½ tarif). Fallback ke daily_wage bila tarif peran 0.
+      const wageOf = (a: { role?: string }) => {
+        const role = a.role || 'sopir';
+        return role === 'kenek' ? (emp.wage_kenek || emp.daily_wage) : (emp.wage_sopir || emp.daily_wage);
+      };
+      const baseSalary =
+        hadirRecords.reduce((sum, a) => sum + wageOf(a), 0) +
+        setengahRecords.reduce((sum, a) => sum + wageOf(a) * 0.5, 0);
+      // Uang makan: hadir penuh + setengah (½)
+      const mealTotal = (hadir + setengah * 0.5) * emp.meal_allowance;
       const transportTotal = cycles * emp.transport_allowance;
       const overtimeTotal = overtimeDays * emp.overtime_rate;
-      // Bonus full: cair per siklus 6 hari hadir
       const bonusAbsen = cycles * emp.attendance_bonus;
       const totalSalary = baseSalary + mealTotal + transportTotal + overtimeTotal + bonusAbsen;
 
@@ -115,7 +119,7 @@ export default function PayrollManager() {
         employee_id: emp.id,
         period_start: periodStart,
         period_end: periodEnd,
-        work_days: hadir,
+        work_days: hadir + setengah, // jumlah hari masuk (penuh + ½)
         absent_days: alfa,
         sick_days: sakit,
         leave_days: izin,
