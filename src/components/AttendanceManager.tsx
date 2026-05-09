@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { CalendarDays, Save, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWeekend } from 'date-fns';
@@ -175,7 +176,7 @@ export default function AttendanceManager() {
                   <TableHead className="w-[180px]">Karyawan</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
                   <TableHead className="w-[110px]">Peran</TableHead>
-                  <TableHead className="w-[90px]">Lembur (jam)</TableHead>
+                  <TableHead className="w-[80px] text-center">Lembur</TableHead>
                   <TableHead>Catatan</TableHead>
                 </TableRow>
               </TableHeader>
@@ -219,8 +220,8 @@ export default function AttendanceManager() {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell>
-                        <Input type="number" min={0} step={0.5} value={currentOT || ''} onChange={e => updateLocal(emp.id, 'overtime_hours', parseFloat(e.target.value) || 0)} className="h-8 w-20 text-xs" placeholder="0" />
+                      <TableCell className="text-center">
+                        <Checkbox checked={currentOT > 0} onCheckedChange={v => updateLocal(emp.id, 'overtime_hours', v ? 1 : 0)} disabled={currentStatus !== 'hadir'} />
                       </TableCell>
                       <TableCell>
                         <Input value={currentNotes} onChange={e => updateLocal(emp.id, 'notes', e.target.value)} className="h-8 text-xs" placeholder="Catatan..." />
