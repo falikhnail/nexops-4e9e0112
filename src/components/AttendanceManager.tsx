@@ -207,6 +207,7 @@ export default function AttendanceManager() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="hadir">✅ Hadir</SelectItem>
+                            <SelectItem value="setengah">🌓 Setengah Hari</SelectItem>
                             <SelectItem value="izin">📋 Izin</SelectItem>
                             <SelectItem value="sakit">🤒 Sakit</SelectItem>
                             <SelectItem value="alfa">❌ Alfa</SelectItem>
@@ -214,7 +215,7 @@ export default function AttendanceManager() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir'}>
+                        <Select value={currentRole} onValueChange={v => updateLocal(emp.id, 'role', v)} disabled={currentStatus !== 'hadir' && currentStatus !== 'setengah'}>
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="sopir">🚛 Sopir</SelectItem>
