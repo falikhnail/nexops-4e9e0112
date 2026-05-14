@@ -278,7 +278,7 @@ export default function AttendanceManager() {
             </Table>
           </CardContent></Card>
         </>
-      ) : (
+      ) : viewMode === 'monthly' ? (
         <>
           {/* Monthly view */}
           <div className="flex items-center gap-3">
