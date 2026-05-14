@@ -88,6 +88,36 @@ export type Database = {
           },
         ]
       }
+      attendance_pairs: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          kenek_id: string | null
+          notes: string | null
+          sopir_id: string
+          team_name: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          kenek_id?: string | null
+          notes?: string | null
+          sopir_id: string
+          team_name?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          kenek_id?: string | null
+          notes?: string | null
+          sopir_id?: string
+          team_name?: string
+        }
+        Relationships: []
+      }
       cash_drawer_deposits: {
         Row: {
           amount: number

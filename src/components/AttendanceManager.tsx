@@ -48,7 +48,48 @@ export default function AttendanceManager() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string; role: string }>>({});
-  const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
+  const [viewMode, setViewMode] = useState<'daily' | 'monthly' | 'pairs'>('daily');
+
+  // Pairs state
+  const [pairs, setPairs] = useState<Array<{ id?: string; date: string; team_name: string; sopir_id: string; kenek_id: string | null; notes: string }>>([]);
+  const [pairDate, setPairDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [pairsLoading, setPairsLoading] = useState(false);
+  const [savingPair, setSavingPair] = useState(false);
+  const [newPair, setNewPair] = useState({ team_name: '', sopir_id: '', kenek_id: '' });
+
+  const fetchPairs = async () => {
+    setPairsLoading(true);
+    const { data } = await supabase.from('attendance_pairs' as any).select('*').eq('date', pairDate).order('team_name');
+    setPairs((data || []) as any);
+    setPairsLoading(false);
+  };
+
+  useEffect(() => { if (viewMode === 'pairs') fetchPairs(); }, [pairDate, viewMode]);
+
+  const addPair = async () => {
+    if (!newPair.sopir_id) { toast.error('Pilih sopir'); return; }
+    setSavingPair(true);
+    const { error } = await supabase.from('attendance_pairs' as any).insert({
+      date: pairDate,
+      team_name: newPair.team_name || `Tim ${pairs.length + 1}`,
+      sopir_id: newPair.sopir_id,
+      kenek_id: newPair.kenek_id || null,
+      notes: '',
+    });
+    setSavingPair(false);
+    if (error) { toast.error('Gagal menambah pasangan'); return; }
+    toast.success('Pasangan ditambahkan');
+    setNewPair({ team_name: '', sopir_id: '', kenek_id: '' });
+    fetchPairs();
+  };
+
+  const deletePair = async (id?: string) => {
+    if (!id) return;
+    await supabase.from('attendance_pairs' as any).delete().eq('id', id);
+    fetchPairs();
+  };
+
+  const empName = (id: string) => employees.find(e => e.id === id)?.name || '-';
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -141,6 +182,7 @@ export default function AttendanceManager() {
       <div className="flex gap-2">
         <Button variant={viewMode === 'daily' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('daily')}>Harian</Button>
         <Button variant={viewMode === 'monthly' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('monthly')}>Bulanan</Button>
+        <Button variant={viewMode === 'pairs' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('pairs')}>Pasangan</Button>
       </div>
 
       {viewMode === 'daily' ? (
@@ -236,7 +278,7 @@ export default function AttendanceManager() {
             </Table>
           </CardContent></Card>
         </>
-      ) : (
+      ) : viewMode === 'monthly' ? (
         <>
           {/* Monthly view */}
           <div className="flex items-center gap-3">
@@ -279,6 +321,65 @@ export default function AttendanceManager() {
                     </TableRow>
                   );
                 })}
+              </TableBody>
+            </Table>
+          </CardContent></Card>
+        </>
+      ) : (
+        <>
+          {/* Pairs view */}
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <Input type="date" value={pairDate} onChange={e => setPairDate(e.target.value)} className="w-[180px]" />
+            </div>
+            <Badge variant="outline">Total Pasangan: {pairs.length}</Badge>
+          </div>
+
+          <Card><CardContent className="p-4 space-y-3">
+            <div className="text-sm font-semibold">Tambah Pasangan</div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+              <Input placeholder="Nama Tim (opsional)" value={newPair.team_name} onChange={e => setNewPair(p => ({ ...p, team_name: e.target.value }))} className="h-9" />
+              <Select value={newPair.sopir_id} onValueChange={v => setNewPair(p => ({ ...p, sopir_id: v }))}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Pilih Sopir" /></SelectTrigger>
+                <SelectContent>
+                  {employees.map(e => <SelectItem key={e.id} value={e.id}>🚛 {e.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={newPair.kenek_id || 'none'} onValueChange={v => setNewPair(p => ({ ...p, kenek_id: v === 'none' ? '' : v }))}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Pilih Kenek" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— Tanpa Kenek —</SelectItem>
+                  {employees.filter(e => e.id !== newPair.sopir_id).map(e => <SelectItem key={e.id} value={e.id}>🧰 {e.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Button onClick={addPair} disabled={savingPair} size="sm">{savingPair ? 'Menambah...' : 'Tambah Pasangan'}</Button>
+            </div>
+          </CardContent></Card>
+
+          <Card><CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[140px]">Tim</TableHead>
+                  <TableHead>Sopir</TableHead>
+                  <TableHead>Kenek</TableHead>
+                  <TableHead className="w-[80px] text-right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pairsLoading ? (
+                  <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Memuat...</TableCell></TableRow>
+                ) : pairs.length === 0 ? (
+                  <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Belum ada pasangan untuk tanggal ini</TableCell></TableRow>
+                ) : pairs.map(p => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-semibold text-sm">{p.team_name}</TableCell>
+                    <TableCell><Badge variant="outline" className="bg-emerald-500/10 text-emerald-600">🚛 {empName(p.sopir_id)}</Badge></TableCell>
+                    <TableCell>{p.kenek_id ? <Badge variant="outline" className="bg-blue-500/10 text-blue-600">🧰 {empName(p.kenek_id)}</Badge> : <span className="text-xs text-muted-foreground">—</span>}</TableCell>
+                    <TableCell className="text-right"><Button variant="ghost" size="sm" onClick={() => deletePair(p.id)} className="text-red-600 h-7">Hapus</Button></TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </CardContent></Card>
