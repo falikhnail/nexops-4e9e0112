@@ -48,7 +48,48 @@ export default function AttendanceManager() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [localEdits, setLocalEdits] = useState<Record<string, { status: AttendanceStatus; overtime_hours: number; notes: string; role: string }>>({});
-  const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
+  const [viewMode, setViewMode] = useState<'daily' | 'monthly' | 'pairs'>('daily');
+
+  // Pairs state
+  const [pairs, setPairs] = useState<Array<{ id?: string; date: string; team_name: string; sopir_id: string; kenek_id: string | null; notes: string }>>([]);
+  const [pairDate, setPairDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [pairsLoading, setPairsLoading] = useState(false);
+  const [savingPair, setSavingPair] = useState(false);
+  const [newPair, setNewPair] = useState({ team_name: '', sopir_id: '', kenek_id: '' });
+
+  const fetchPairs = async () => {
+    setPairsLoading(true);
+    const { data } = await supabase.from('attendance_pairs' as any).select('*').eq('date', pairDate).order('team_name');
+    setPairs((data || []) as any);
+    setPairsLoading(false);
+  };
+
+  useEffect(() => { if (viewMode === 'pairs') fetchPairs(); }, [pairDate, viewMode]);
+
+  const addPair = async () => {
+    if (!newPair.sopir_id) { toast.error('Pilih sopir'); return; }
+    setSavingPair(true);
+    const { error } = await supabase.from('attendance_pairs' as any).insert({
+      date: pairDate,
+      team_name: newPair.team_name || `Tim ${pairs.length + 1}`,
+      sopir_id: newPair.sopir_id,
+      kenek_id: newPair.kenek_id || null,
+      notes: '',
+    });
+    setSavingPair(false);
+    if (error) { toast.error('Gagal menambah pasangan'); return; }
+    toast.success('Pasangan ditambahkan');
+    setNewPair({ team_name: '', sopir_id: '', kenek_id: '' });
+    fetchPairs();
+  };
+
+  const deletePair = async (id?: string) => {
+    if (!id) return;
+    await supabase.from('attendance_pairs' as any).delete().eq('id', id);
+    fetchPairs();
+  };
+
+  const empName = (id: string) => employees.find(e => e.id === id)?.name || '-';
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
