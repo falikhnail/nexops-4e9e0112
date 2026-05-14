@@ -182,6 +182,7 @@ export default function AttendanceManager() {
       <div className="flex gap-2">
         <Button variant={viewMode === 'daily' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('daily')}>Harian</Button>
         <Button variant={viewMode === 'monthly' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('monthly')}>Bulanan</Button>
+        <Button variant={viewMode === 'pairs' ? 'default' : 'outline'} size="sm" onClick={() => setViewMode('pairs')}>Pasangan</Button>
       </div>
 
       {viewMode === 'daily' ? (
