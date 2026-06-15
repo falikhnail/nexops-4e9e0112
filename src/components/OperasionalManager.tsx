@@ -504,6 +504,62 @@ export default function OperasionalManager() {
           </div>
         </TabsContent>
 
+        {/* ===== TAB: SHORTCUT ===== */}
+        <TabsContent value="shortcut" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Zap className="h-4 w-4 text-warning" /> Kelola Shortcut
+              </CardTitle>
+              <Button size="sm" onClick={() => setOpenShortcutForm(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Tambah Shortcut
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-muted-foreground mb-3">
+                Shortcut adalah tombol cepat untuk transaksi yang sering Anda lakukan. Sekali klik di tab Transaksi, data langsung tersimpan dengan tanggal hari ini.
+              </p>
+              {shortcuts.length === 0 ? (
+                <div className="rounded-lg border-2 border-dashed border-border p-8 text-center">
+                  <Zap className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Belum ada shortcut. Tambahkan transaksi yang sering Anda lakukan.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {shortcuts.map(sc => (
+                    <div key={sc.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
+                      <div className={`h-9 w-9 rounded-full flex items-center justify-center shrink-0 ${sc.type === 'pemasukan' ? 'bg-success/10' : 'bg-destructive/10'}`}>
+                        {sc.type === 'pemasukan' ? <ArrowDownRight className="h-4 w-4 text-success" /> : <ArrowUpRight className="h-4 w-4 text-destructive" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-sm">{sc.label}</p>
+                          <Badge variant={sc.category === 'cash' ? 'secondary' : 'outline'} className="text-[10px]">
+                            {sc.category === 'cash' ? 'Cash' : 'Transfer'}
+                          </Badge>
+                          {sc.categoryId && (
+                            <Badge variant="outline" className="text-[10px] gap-1">
+                              <Tag className="h-2.5 w-2.5" />
+                              {categories.find(c => c.id === sc.categoryId)?.name || '-'}
+                            </Badge>
+                          )}
+                        </div>
+                        {sc.description && <p className="text-xs text-muted-foreground truncate">{sc.description}</p>}
+                      </div>
+                      <p className={`font-semibold text-sm shrink-0 ${sc.type === 'pemasukan' ? 'text-success' : 'text-destructive'}`}>
+                        {sc.type === 'pemasukan' ? '+' : '-'}{formatCurrency(sc.amount)}
+                      </p>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteShortcut(sc.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* ===== TAB: RINGKASAN ===== */}
         <TabsContent value="ringkasan" className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-2">
