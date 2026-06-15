@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, Landmark, ArrowUpRight, ArrowDownRight, Filter, Tag, Image, Upload, X, Settings, History, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, Landmark, ArrowUpRight, ArrowDownRight, Filter, Tag, Image, Upload, X, Settings, History, ChevronDown, ChevronRight, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
-import { getOperationalTransactions, addOperationalTransaction, deleteOperationalTransaction, getCashDrawerBalance, depositCashDrawer, getCashDrawerDeposits, getOperationalCategories, addOperationalCategory, deleteOperationalCategory, uploadReceipt, type OperationalTransaction, type CashDrawerDeposit, type OperationalCategory } from '@/lib/operasional';
+import { getOperationalTransactions, addOperationalTransaction, deleteOperationalTransaction, getCashDrawerBalance, depositCashDrawer, getCashDrawerDeposits, getOperationalCategories, addOperationalCategory, deleteOperationalCategory, uploadReceipt, getOperationalShortcuts, addOperationalShortcut, deleteOperationalShortcut, type OperationalTransaction, type CashDrawerDeposit, type OperationalCategory, type OperationalShortcut } from '@/lib/operasional';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 const formatRupiahInput = (value: string): string => {
@@ -33,6 +33,7 @@ export default function OperasionalManager() {
   const [transactions, setTransactions] = useState<OperationalTransaction[]>([]);
   const [deposits, setDeposits] = useState<CashDrawerDeposit[]>([]);
   const [categories, setCategories] = useState<OperationalCategory[]>([]);
+  const [shortcuts, setShortcuts] = useState<OperationalShortcut[]>([]);
   const [cashDrawerBalance, setCashDrawerBalance] = useState(0);
   const [openNew, setOpenNew] = useState(false);
   const [openDeposit, setOpenDeposit] = useState(false);
@@ -66,17 +67,29 @@ export default function OperasionalManager() {
 
   const [newCatForm, setNewCatForm] = useState({ name: '', type: 'pengeluaran' as 'pemasukan' | 'pengeluaran' });
 
+  const [openShortcutForm, setOpenShortcutForm] = useState(false);
+  const [shortcutForm, setShortcutForm] = useState({
+    label: '',
+    type: 'pengeluaran' as 'pemasukan' | 'pengeluaran',
+    category: 'cash' as 'cash' | 'transfer',
+    amount: '',
+    description: '',
+    categoryId: '' as string,
+  });
+
   const refresh = async () => {
-    const [txns, bal, deps, cats] = await Promise.all([
+    const [txns, bal, deps, cats, scs] = await Promise.all([
       getOperationalTransactions(),
       getCashDrawerBalance(),
       getCashDrawerDeposits(),
       getOperationalCategories(),
+      getOperationalShortcuts(),
     ]);
     setTransactions(txns);
     setCashDrawerBalance(bal);
     setDeposits(deps);
     setCategories(cats);
+    setShortcuts(scs);
   };
 
   useEffect(() => { refresh(); }, []);
@@ -268,6 +281,50 @@ export default function OperasionalManager() {
     }
   };
 
+  const handleQuickAdd = async (sc: OperationalShortcut) => {
+    try {
+      await addOperationalTransaction({
+        type: sc.type,
+        category: sc.category,
+        amount: sc.amount,
+        description: sc.description || sc.label,
+        date: new Date().toISOString().slice(0, 10),
+        categoryId: sc.categoryId,
+        receiptUrl: null,
+      });
+      toast({ title: 'Tersimpan', description: `${sc.label} • ${formatCurrency(sc.amount)}` });
+      refresh();
+    } catch {
+      toast({ title: 'Error', description: 'Gagal menyimpan transaksi cepat', variant: 'destructive' });
+    }
+  };
+
+  const handleAddShortcut = async () => {
+    const amount = parseRupiahInput(shortcutForm.amount);
+    if (!shortcutForm.label.trim() || !amount) {
+      toast({ title: 'Error', description: 'Label dan nominal wajib diisi', variant: 'destructive' });
+      return;
+    }
+    await addOperationalShortcut({
+      label: shortcutForm.label.trim(),
+      type: shortcutForm.type,
+      category: shortcutForm.category,
+      amount,
+      description: shortcutForm.description,
+      categoryId: shortcutForm.categoryId || null,
+    });
+    toast({ title: 'Berhasil', description: 'Shortcut ditambahkan' });
+    setShortcutForm({ label: '', type: 'pengeluaran', category: 'cash', amount: '', description: '', categoryId: '' });
+    setOpenShortcutForm(false);
+    refresh();
+  };
+
+  const handleDeleteShortcut = async (id: string) => {
+    await deleteOperationalShortcut(id);
+    toast({ title: 'Dihapus', description: 'Shortcut dihapus' });
+    refresh();
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="transaksi" className="space-y-6">
@@ -278,6 +335,7 @@ export default function OperasionalManager() {
           </div>
           <TabsList>
             <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
+            <TabsTrigger value="shortcut">Shortcut</TabsTrigger>
             <TabsTrigger value="ringkasan">Ringkasan</TabsTrigger>
             <TabsTrigger value="kategori">Kategori</TabsTrigger>
           </TabsList>
@@ -377,6 +435,34 @@ export default function OperasionalManager() {
             </div>
           </div>
 
+          {shortcuts.length > 0 && (
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-3.5 w-3.5 text-warning" />
+                <span className="text-xs font-semibold text-foreground">Shortcut Cepat</span>
+                <span className="text-[10px] text-muted-foreground">Klik untuk simpan langsung (tanggal hari ini)</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {shortcuts.map(sc => (
+                  <button
+                    key={sc.id}
+                    onClick={() => handleQuickAdd(sc)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:scale-105 active:scale-95 ${
+                      sc.type === 'pemasukan'
+                        ? 'border-success/30 bg-success/10 text-success hover:bg-success/20'
+                        : 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20'
+                    }`}
+                  >
+                    {sc.type === 'pemasukan' ? <ArrowDownRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
+                    <span>{sc.label}</span>
+                    <span className="font-semibold">{formatCurrency(sc.amount)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+
           <div className="space-y-2">
             {filtered.length === 0 && (
               <Card><CardContent className="py-8 text-center text-muted-foreground">Belum ada transaksi operasional</CardContent></Card>
@@ -416,6 +502,62 @@ export default function OperasionalManager() {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* ===== TAB: SHORTCUT ===== */}
+        <TabsContent value="shortcut" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Zap className="h-4 w-4 text-warning" /> Kelola Shortcut
+              </CardTitle>
+              <Button size="sm" onClick={() => setOpenShortcutForm(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Tambah Shortcut
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-muted-foreground mb-3">
+                Shortcut adalah tombol cepat untuk transaksi yang sering Anda lakukan. Sekali klik di tab Transaksi, data langsung tersimpan dengan tanggal hari ini.
+              </p>
+              {shortcuts.length === 0 ? (
+                <div className="rounded-lg border-2 border-dashed border-border p-8 text-center">
+                  <Zap className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Belum ada shortcut. Tambahkan transaksi yang sering Anda lakukan.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {shortcuts.map(sc => (
+                    <div key={sc.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
+                      <div className={`h-9 w-9 rounded-full flex items-center justify-center shrink-0 ${sc.type === 'pemasukan' ? 'bg-success/10' : 'bg-destructive/10'}`}>
+                        {sc.type === 'pemasukan' ? <ArrowDownRight className="h-4 w-4 text-success" /> : <ArrowUpRight className="h-4 w-4 text-destructive" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-sm">{sc.label}</p>
+                          <Badge variant={sc.category === 'cash' ? 'secondary' : 'outline'} className="text-[10px]">
+                            {sc.category === 'cash' ? 'Cash' : 'Transfer'}
+                          </Badge>
+                          {sc.categoryId && (
+                            <Badge variant="outline" className="text-[10px] gap-1">
+                              <Tag className="h-2.5 w-2.5" />
+                              {categories.find(c => c.id === sc.categoryId)?.name || '-'}
+                            </Badge>
+                          )}
+                        </div>
+                        {sc.description && <p className="text-xs text-muted-foreground truncate">{sc.description}</p>}
+                      </div>
+                      <p className={`font-semibold text-sm shrink-0 ${sc.type === 'pemasukan' ? 'text-success' : 'text-destructive'}`}>
+                        {sc.type === 'pemasukan' ? '+' : '-'}{formatCurrency(sc.amount)}
+                      </p>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteShortcut(sc.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ===== TAB: RINGKASAN ===== */}
@@ -744,6 +886,75 @@ export default function OperasionalManager() {
                 })}
               </div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Shortcut Form Dialog */}
+      <Dialog open={openShortcutForm} onOpenChange={setOpenShortcutForm}>
+        <DialogContent className="max-w-md w-[95vw]">
+          <DialogHeader><DialogTitle>Tambah Shortcut</DialogTitle></DialogHeader>
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            <div>
+              <Label>Label Shortcut</Label>
+              <Input
+                value={shortcutForm.label}
+                onChange={e => setShortcutForm(p => ({ ...p, label: e.target.value }))}
+                placeholder="Contoh: Bensin, Makan Siang"
+              />
+            </div>
+            <div>
+              <Label>Jenis</Label>
+              <Select value={shortcutForm.type} onValueChange={(v: 'pemasukan' | 'pengeluaran') => setShortcutForm(p => ({ ...p, type: v, categoryId: '' }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pemasukan">Pemasukan</SelectItem>
+                  <SelectItem value="pengeluaran">Pengeluaran</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Kategori (opsional)</Label>
+              <Select value={shortcutForm.categoryId} onValueChange={v => setShortcutForm(p => ({ ...p, categoryId: v }))}>
+                <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
+                <SelectContent>
+                  {categories.filter(c => c.type === shortcutForm.type).map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Metode</Label>
+              <Select value={shortcutForm.category} onValueChange={(v: 'cash' | 'transfer') => setShortcutForm(p => ({ ...p, category: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="transfer">Transfer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Nominal</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
+                <Input
+                  className="pl-9"
+                  value={shortcutForm.amount}
+                  onChange={e => setShortcutForm(p => ({ ...p, amount: formatRupiahInput(e.target.value) }))}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Keterangan (opsional)</Label>
+              <Input
+                value={shortcutForm.description}
+                onChange={e => setShortcutForm(p => ({ ...p, description: e.target.value }))}
+                placeholder="Deskripsi default"
+              />
+            </div>
+            <Button onClick={handleAddShortcut} className="w-full">Simpan Shortcut</Button>
           </div>
         </DialogContent>
       </Dialog>

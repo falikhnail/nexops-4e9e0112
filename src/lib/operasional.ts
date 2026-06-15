@@ -153,3 +153,52 @@ export async function getCashDrawerDeposits(): Promise<CashDrawerDeposit[]> {
     createdAt: r.created_at,
   }));
 }
+
+// ===== Shortcuts CRUD =====
+export interface OperationalShortcut {
+  id: string;
+  label: string;
+  type: 'pemasukan' | 'pengeluaran';
+  category: 'cash' | 'transfer';
+  amount: number;
+  description: string;
+  categoryId: string | null;
+  sortOrder: number;
+}
+
+export async function getOperationalShortcuts(): Promise<OperationalShortcut[]> {
+  const { data, error } = await (supabase as any)
+    .from('operational_shortcuts')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    label: r.label,
+    type: r.type,
+    category: r.category,
+    amount: Number(r.amount),
+    description: r.description || '',
+    categoryId: r.category_id || null,
+    sortOrder: r.sort_order || 0,
+  }));
+}
+
+export async function addOperationalShortcut(s: Omit<OperationalShortcut, 'id' | 'sortOrder'> & { sortOrder?: number }): Promise<void> {
+  const { error } = await (supabase as any).from('operational_shortcuts').insert({
+    label: s.label,
+    type: s.type,
+    category: s.category,
+    amount: s.amount,
+    description: s.description,
+    category_id: s.categoryId,
+    sort_order: s.sortOrder ?? 0,
+  });
+  if (error) throw error;
+}
+
+export async function deleteOperationalShortcut(id: string): Promise<void> {
+  const { error } = await (supabase as any).from('operational_shortcuts').delete().eq('id', id);
+  if (error) throw error;
+}

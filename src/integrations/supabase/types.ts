@@ -217,6 +217,50 @@ export type Database = {
         }
         Relationships: []
       }
+      operational_shortcuts: {
+        Row: {
+          amount: number
+          category: string
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          label: string
+          sort_order: number
+          type: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          label: string
+          sort_order?: number
+          type: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          label?: string
+          sort_order?: number
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operational_shortcuts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "operational_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       operational_transactions: {
         Row: {
           amount: number
