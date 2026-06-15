@@ -435,6 +435,34 @@ export default function OperasionalManager() {
             </div>
           </div>
 
+          {shortcuts.length > 0 && (
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-3.5 w-3.5 text-warning" />
+                <span className="text-xs font-semibold text-foreground">Shortcut Cepat</span>
+                <span className="text-[10px] text-muted-foreground">Klik untuk simpan langsung (tanggal hari ini)</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {shortcuts.map(sc => (
+                  <button
+                    key={sc.id}
+                    onClick={() => handleQuickAdd(sc)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:scale-105 active:scale-95 ${
+                      sc.type === 'pemasukan'
+                        ? 'border-success/30 bg-success/10 text-success hover:bg-success/20'
+                        : 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20'
+                    }`}
+                  >
+                    {sc.type === 'pemasukan' ? <ArrowDownRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
+                    <span>{sc.label}</span>
+                    <span className="font-semibold">{formatCurrency(sc.amount)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+
           <div className="space-y-2">
             {filtered.length === 0 && (
               <Card><CardContent className="py-8 text-center text-muted-foreground">Belum ada transaksi operasional</CardContent></Card>
