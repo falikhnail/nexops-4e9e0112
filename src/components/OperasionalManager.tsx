@@ -33,6 +33,7 @@ export default function OperasionalManager() {
   const [transactions, setTransactions] = useState<OperationalTransaction[]>([]);
   const [deposits, setDeposits] = useState<CashDrawerDeposit[]>([]);
   const [categories, setCategories] = useState<OperationalCategory[]>([]);
+  const [shortcuts, setShortcuts] = useState<OperationalShortcut[]>([]);
   const [cashDrawerBalance, setCashDrawerBalance] = useState(0);
   const [openNew, setOpenNew] = useState(false);
   const [openDeposit, setOpenDeposit] = useState(false);
