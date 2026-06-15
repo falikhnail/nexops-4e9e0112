@@ -127,7 +127,7 @@ export async function getCashDrawerBalance(): Promise<number> {
   });
 
   const deposited = (depRes.data || []).reduce((s, r) => s + Number(r.amount), 0);
-  return Math.max(0, cashIn - cashOut - deposited);
+  return cashIn - cashOut - deposited;
 }
 
 export async function depositCashDrawer(data: { amount: number; notes: string; date: string }): Promise<void> {
