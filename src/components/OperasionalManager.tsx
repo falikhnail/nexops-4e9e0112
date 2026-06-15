@@ -85,43 +85,49 @@ export default function OperasionalManager() {
     return categories.filter(c => c.type === newForm.type);
   }, [categories, newForm.type]);
 
+  // Bulan berjalan (YYYY-MM)
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
   const filtered = useMemo(() => {
     return transactions.filter(t => {
+      // Sembunyikan data bulan sebelumnya secara default; tetap tampil bila user memfilter tanggal
+      if (!filterDateFrom && !filterDateTo && !t.date.startsWith(currentMonth)) return false;
       if (filterType !== 'all' && t.type !== filterType) return false;
       if (filterCategoryId !== 'all' && t.categoryId !== filterCategoryId) return false;
       if (filterDateFrom && t.date < filterDateFrom) return false;
       if (filterDateTo && t.date > filterDateTo) return false;
       return true;
     });
-  }, [transactions, filterType, filterCategoryId, filterDateFrom, filterDateTo]);
+  }, [transactions, filterType, filterCategoryId, filterDateFrom, filterDateTo, currentMonth]);
 
   const totals = useMemo(() => {
     const todayStr = new Date().toISOString().slice(0, 10);
-    // Tanggal acuan: kalau user filter tanggal mulai, pakai itu; kalau tidak, pakai hari ini
     const refDate = filterDateFrom || todayStr;
+    const monthStart = currentMonth + '-01';
+    const useMonthly = !filterDateFrom && !filterDateTo;
 
-    // Saldo Kemarin = sisa UANG DI LACI pada akhir hari sebelum refDate
-    // (basis kategori cash + dikurangi setoran ke bank, dari SEMUA transaksi, tidak ikut filter)
+    // Saldo awal bulan: kas laci di akhir bulan sebelumnya (hanya saat tampilan bulan berjalan)
     let cashInBefore = 0;
     let cashOutBefore = 0;
+    const cutoff = useMonthly ? monthStart : refDate;
     transactions.forEach(t => {
-      if (t.category === 'cash' && t.date < refDate) {
+      if (t.category === 'cash' && t.date < cutoff) {
         if (t.type === 'pemasukan') cashInBefore += t.amount;
         else cashOutBefore += t.amount;
       }
     });
-    const depositsBefore = deposits.filter(d => d.date < refDate).reduce((s, d) => s + d.amount, 0);
+    const depositsBefore = deposits.filter(d => d.date < cutoff).reduce((s, d) => s + d.amount, 0);
     const saldoKemarin = Math.max(0, cashInBefore - cashOutBefore - depositsBefore);
 
-    // Hari ini = transaksi pada refDate (tidak terpengaruh filter type/kategori biar konsisten)
     const pemasukanToday = transactions.filter(t => t.type === 'pemasukan' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
     const pengeluaranToday = transactions.filter(t => t.type === 'pengeluaran' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
 
-    // Untuk daftar/laporan tetap pakai data terfilter
+    const pemasukanList = filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
     const pengeluaran = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
-    const pemasukan = saldoKemarin + pemasukanToday;
+    const pemasukan = useMonthly ? pemasukanList : saldoKemarin + pemasukanToday;
     return { pemasukan, pengeluaran, saldo: pemasukan - pengeluaran, saldoKemarin, pemasukanToday, pengeluaranToday };
-  }, [transactions, deposits, filtered, filterDateFrom]);
+  }, [transactions, deposits, filtered, filterDateFrom, filterDateTo, currentMonth]);
+
 
   const categoryBreakdown = useMemo(() => {
     const map = new Map<string, { name: string; type: string; total: number; count: number }>();
