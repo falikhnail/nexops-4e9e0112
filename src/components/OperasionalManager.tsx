@@ -335,6 +335,7 @@ export default function OperasionalManager() {
           </div>
           <TabsList>
             <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
+            <TabsTrigger value="shortcut">Shortcut</TabsTrigger>
             <TabsTrigger value="ringkasan">Ringkasan</TabsTrigger>
             <TabsTrigger value="kategori">Kategori</TabsTrigger>
           </TabsList>
