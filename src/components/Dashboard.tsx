@@ -153,11 +153,10 @@ export default function Dashboard() {
       {/* Operational Stats */}
       <section>
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Operasional</h3>
-        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
           {[
             { title: 'Pemasukan Hari Ini', value: formatCurrency(todayIncome), icon: ArrowDownCircle, iconBg: 'bg-success/10', iconColor: 'text-success' },
             { title: 'Pengeluaran Hari Ini', value: formatCurrency(todayExpense), icon: ArrowUpCircle, iconBg: 'bg-destructive/10', iconColor: 'text-destructive' },
-            { title: 'Saldo Laci', value: formatCurrency(drawerBalance), icon: Wallet, iconBg: 'bg-primary/10', iconColor: 'text-primary' },
             { title: 'Saldo Bersih', value: formatCurrency(totalIncome - totalExpense), icon: Landmark, iconBg: 'bg-accent/10', iconColor: 'text-accent' },
           ].map((stat) => (
             <Card key={stat.title} className="border-border/50">
