@@ -313,11 +313,11 @@ export default function OperasionalManager() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {[
-            { title: 'Saldo Kemarin', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive' },
-            { title: 'Pemasukan Hari Ini', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success' },
-            { title: 'Total Pemasukan', value: totals.pemasukan, icon: TrendingUp, color: 'success', sub: 'Saldo kemarin + hari ini' },
-            { title: 'Total Pengeluaran', value: totals.pengeluaran, icon: TrendingDown, color: 'destructive' },
-            { title: 'Saldo Bersih', value: totals.saldo, icon: Wallet, color: totals.saldo >= 0 ? 'primary' : 'destructive', highlight: true },
+            { title: 'Saldo Awal Periode', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive', sub: 'Sisa kas sebelum periode' },
+            { title: 'Pemasukan Periode', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success', sub: 'Sesuai filter aktif' },
+            { title: 'Total Pemasukan', value: totals.pemasukan, icon: TrendingUp, color: 'success', sub: 'Saldo awal + pemasukan' },
+            { title: 'Total Pengeluaran', value: totals.pengeluaran, icon: TrendingDown, color: 'destructive', sub: 'Sesuai filter aktif' },
+            { title: 'Saldo Bersih', value: totals.saldo, icon: Wallet, color: totals.saldo >= 0 ? 'primary' : 'destructive', highlight: true, sub: 'Total pemasukan − pengeluaran' },
           ].map((s) => {
             const Icon = s.icon;
             const colorMap: Record<string, { text: string; bg: string }> = {
