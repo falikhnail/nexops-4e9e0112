@@ -269,49 +269,6 @@ export default function OperasionalManager() {
     }
   };
 
-  const handleQuickAdd = async (sc: OperationalShortcut) => {
-    try {
-      await addOperationalTransaction({
-        type: sc.type,
-        category: sc.category,
-        amount: sc.amount,
-        description: sc.description || sc.label,
-        date: new Date().toISOString().slice(0, 10),
-        categoryId: sc.categoryId,
-        receiptUrl: null,
-      });
-      toast({ title: 'Tersimpan', description: `${sc.label} • ${formatCurrency(sc.amount)}` });
-      refresh();
-    } catch {
-      toast({ title: 'Error', description: 'Gagal menyimpan transaksi cepat', variant: 'destructive' });
-    }
-  };
-
-  const handleAddShortcut = async () => {
-    const amount = parseRupiahInput(shortcutForm.amount);
-    if (!shortcutForm.label.trim() || !amount) {
-      toast({ title: 'Error', description: 'Label dan nominal wajib diisi', variant: 'destructive' });
-      return;
-    }
-    await addOperationalShortcut({
-      label: shortcutForm.label.trim(),
-      type: shortcutForm.type,
-      category: shortcutForm.category,
-      amount,
-      description: shortcutForm.description,
-      categoryId: shortcutForm.categoryId || null,
-    });
-    toast({ title: 'Berhasil', description: 'Shortcut ditambahkan' });
-    setShortcutForm({ label: '', type: 'pengeluaran', category: 'cash', amount: '', description: '', categoryId: '' });
-    setOpenShortcutForm(false);
-    refresh();
-  };
-
-  const handleDeleteShortcut = async (id: string) => {
-    await deleteOperationalShortcut(id);
-    toast({ title: 'Dihapus', description: 'Shortcut dihapus' });
-    refresh();
-  };
 
   return (
     <div className="space-y-6">
