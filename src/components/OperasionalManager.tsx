@@ -67,29 +67,17 @@ export default function OperasionalManager() {
 
   const [newCatForm, setNewCatForm] = useState({ name: '', type: 'pengeluaran' as 'pemasukan' | 'pengeluaran' });
 
-  const [openShortcutForm, setOpenShortcutForm] = useState(false);
-  const [shortcutForm, setShortcutForm] = useState({
-    label: '',
-    type: 'pengeluaran' as 'pemasukan' | 'pengeluaran',
-    category: 'cash' as 'cash' | 'transfer',
-    amount: '',
-    description: '',
-    categoryId: '' as string,
-  });
-
   const refresh = async () => {
-    const [txns, bal, deps, cats, scs] = await Promise.all([
+    const [txns, bal, deps, cats] = await Promise.all([
       getOperationalTransactions(),
       getCashDrawerBalance(),
       getCashDrawerDeposits(),
       getOperationalCategories(),
-      getOperationalShortcuts(),
     ]);
     setTransactions(txns);
     setCashDrawerBalance(bal);
     setDeposits(deps);
     setCategories(cats);
-    setShortcuts(scs);
   };
 
   useEffect(() => { refresh(); }, []);
