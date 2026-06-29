@@ -101,33 +101,51 @@ export default function OperasionalManager() {
     });
   }, [transactions, filterType, filterCategoryId, filterDateFrom, filterDateTo, currentMonth]);
 
-  const totals = useMemo(() => {
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const refDate = filterDateFrom || todayStr;
-    const monthStart = currentMonth + '-01';
-    const useMonthly = !filterDateFrom && !filterDateTo;
+  // Periode aktif (sinkron dengan list yang ditampilkan)
+  const periodRange = useMemo(() => {
+    if (filterDateFrom || filterDateTo) {
+      const monthEnd = new Date(currentMonth + '-01');
+      monthEnd.setMonth(monthEnd.getMonth() + 1);
+      const fallbackEnd = monthEnd.toISOString().slice(0, 10);
+      return {
+        start: filterDateFrom || '0000-01-01',
+        end: filterDateTo || fallbackEnd,
+      };
+    }
+    const start = currentMonth + '-01';
+    const next = new Date(start);
+    next.setMonth(next.getMonth() + 1);
+    const end = next.toISOString().slice(0, 10);
+    return { start, end };
+  }, [filterDateFrom, filterDateTo, currentMonth]);
 
-    // Saldo awal bulan: kas laci di akhir bulan sebelumnya (hanya saat tampilan bulan berjalan)
-    let cashInBefore = 0;
-    let cashOutBefore = 0;
-    const cutoff = useMonthly ? monthStart : refDate;
+  const totals = useMemo(() => {
+    // Saldo awal periode = saldo kas laci di akhir hari sebelum periode dimulai
+    let cashIn = 0, cashOut = 0;
     transactions.forEach(t => {
-      if (t.category === 'cash' && t.date < cutoff) {
-        if (t.type === 'pemasukan') cashInBefore += t.amount;
-        else cashOutBefore += t.amount;
+      if (t.category === 'cash' && t.date < periodRange.start) {
+        if (t.type === 'pemasukan') cashIn += t.amount;
+        else cashOut += t.amount;
       }
     });
-    const depositsBefore = deposits.filter(d => d.date < cutoff).reduce((s, d) => s + d.amount, 0);
-    const saldoKemarin = Math.max(0, cashInBefore - cashOutBefore - depositsBefore);
+    const depositsBefore = deposits.filter(d => d.date < periodRange.start).reduce((s, d) => s + d.amount, 0);
+    const saldoAwal = cashIn - cashOut - depositsBefore;
 
-    const pemasukanToday = transactions.filter(t => t.type === 'pemasukan' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
-    const pengeluaranToday = transactions.filter(t => t.type === 'pengeluaran' && t.date === refDate).reduce((s, t) => s + t.amount, 0);
+    // Sinkron dengan list "filtered"
+    const pemasukanPeriode = filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
+    const pengeluaranPeriode = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
 
-    const pemasukanList = filtered.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
-    const pengeluaran = filtered.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
-    const pemasukan = useMonthly ? pemasukanList : saldoKemarin + pemasukanToday;
-    return { pemasukan, pengeluaran, saldo: pemasukan - pengeluaran, saldoKemarin, pemasukanToday, pengeluaranToday };
-  }, [transactions, deposits, filtered, filterDateFrom, filterDateTo, currentMonth]);
+    const totalPemasukan = saldoAwal + pemasukanPeriode;
+    const saldoBersih = totalPemasukan - pengeluaranPeriode;
+
+    return {
+      saldoKemarin: saldoAwal,
+      pemasukanToday: pemasukanPeriode,
+      pemasukan: totalPemasukan,
+      pengeluaran: pengeluaranPeriode,
+      saldo: saldoBersih,
+    };
+  }, [transactions, deposits, filtered, periodRange]);
 
 
   const categoryBreakdown = useMemo(() => {
@@ -143,28 +161,34 @@ export default function OperasionalManager() {
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [filtered]);
 
-  // Riwayat saldo harian (audit per tanggal) - dari semua transaksi (tidak terfilter)
+  // Riwayat saldo harian: saldo kas laci sebenarnya (memperhitungkan setoran)
   const dailyAudit = useMemo(() => {
-    const byDate = new Map<string, OperationalTransaction[]>();
+    const byDate = new Map<string, { txs: OperationalTransaction[]; deps: CashDrawerDeposit[] }>();
     transactions.forEach(t => {
-      const arr = byDate.get(t.date) || [];
-      arr.push(t);
-      byDate.set(t.date, arr);
+      const slot = byDate.get(t.date) || { txs: [], deps: [] };
+      slot.txs.push(t);
+      byDate.set(t.date, slot);
+    });
+    deposits.forEach(d => {
+      const slot = byDate.get(d.date) || { txs: [], deps: [] };
+      slot.deps.push(d);
+      byDate.set(d.date, slot);
     });
     const dates = Array.from(byDate.keys()).sort();
     let running = 0;
     const rows = dates.map(date => {
-      const txs = byDate.get(date)!;
+      const { txs, deps: dps } = byDate.get(date)!;
       const pemasukanHari = txs.filter(t => t.type === 'pemasukan').reduce((s, t) => s + t.amount, 0);
       const pengeluaranHari = txs.filter(t => t.type === 'pengeluaran').reduce((s, t) => s + t.amount, 0);
+      const setoranHari = dps.reduce((s, d) => s + d.amount, 0);
       const saldoAwal = running;
       const totalPemasukan = saldoAwal + pemasukanHari;
-      const saldoAkhir = totalPemasukan - pengeluaranHari;
+      const saldoAkhir = totalPemasukan - pengeluaranHari - setoranHari;
       running = saldoAkhir;
       return { date, saldoAwal, pemasukanHari, pengeluaranHari, totalPemasukan, saldoAkhir, txs };
     });
-    return rows.reverse(); // terbaru di atas
-  }, [transactions]);
+    return rows.reverse();
+  }, [transactions, deposits]);
 
   const toggleAuditRow = (date: string) => {
     setAuditExpanded(prev => {
@@ -289,11 +313,11 @@ export default function OperasionalManager() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {[
-            { title: 'Saldo Kemarin', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive' },
-            { title: 'Pemasukan Hari Ini', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success' },
-            { title: 'Total Pemasukan', value: totals.pemasukan, icon: TrendingUp, color: 'success', sub: 'Saldo kemarin + hari ini' },
-            { title: 'Total Pengeluaran', value: totals.pengeluaran, icon: TrendingDown, color: 'destructive' },
-            { title: 'Saldo Bersih', value: totals.saldo, icon: Wallet, color: totals.saldo >= 0 ? 'primary' : 'destructive', highlight: true },
+            { title: 'Saldo Awal Periode', value: totals.saldoKemarin, icon: Wallet, color: totals.saldoKemarin >= 0 ? 'primary' : 'destructive', sub: 'Sisa kas sebelum periode' },
+            { title: 'Pemasukan Periode', value: totals.pemasukanToday, icon: ArrowDownRight, color: 'success', sub: 'Sesuai filter aktif' },
+            { title: 'Total Pemasukan', value: totals.pemasukan, icon: TrendingUp, color: 'success', sub: 'Saldo awal + pemasukan' },
+            { title: 'Total Pengeluaran', value: totals.pengeluaran, icon: TrendingDown, color: 'destructive', sub: 'Sesuai filter aktif' },
+            { title: 'Saldo Bersih', value: totals.saldo, icon: Wallet, color: totals.saldo >= 0 ? 'primary' : 'destructive', highlight: true, sub: 'Total pemasukan − pengeluaran' },
           ].map((s) => {
             const Icon = s.icon;
             const colorMap: Record<string, { text: string; bg: string }> = {
